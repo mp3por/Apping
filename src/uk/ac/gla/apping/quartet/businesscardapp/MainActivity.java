@@ -15,7 +15,6 @@ public class MainActivity extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_main);	
@@ -38,6 +37,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {			
 				Intent intent = new Intent(MainActivity.this, CardViewerActivity.class);
+				intent.putExtra("id", 0); // passing the database id of the card to the CardViewerActivity activity
 				startActivity(intent);
 			}
 				

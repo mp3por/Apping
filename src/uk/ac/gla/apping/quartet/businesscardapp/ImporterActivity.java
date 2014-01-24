@@ -3,12 +3,16 @@ package uk.ac.gla.apping.quartet.businesscardapp;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
 import android.content.Intent;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
 public class ImporterActivity extends Activity {
+	private static final int CAMERA_REQUEST = 1888;
+	private static final int GALLERY_REQUEST = 3;
+	
 	
 	private Button mButtonCamera;
 	private Button mButtonGallery;
@@ -26,7 +30,8 @@ public class ImporterActivity extends Activity {
 				
 			@Override
 			public void onClick(View arg0) {			
-				// TODO: call camera
+				Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); 
+				startActivityForResult(cameraIntent, CAMERA_REQUEST);	
 			}
 				
 		});
@@ -37,7 +42,8 @@ public class ImporterActivity extends Activity {
 				
 			@Override
 			public void onClick(View arg0) {			
-				// TODO: call gallery
+				Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+				startActivityForResult(intent, GALLERY_REQUEST);
 			}
 				
 		});
@@ -46,7 +52,23 @@ public class ImporterActivity extends Activity {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) { // camera returned picture
+			// Bitmap photo = (Bitmap) data.getExtras().get("data");
+		} else if (requestCode == GALLERY_REQUEST && resultCode == Activity.RESULT_OK) { // gallery returned picture
+			// Uri selectedImage = data.getData();
+	        // Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+		} else {
+			// fail
+		}
+		
+		
+		// do OCR stuff here
+		
+		// save in the db here
+		
+		Intent intent = new Intent(ImporterActivity.this, CardViewerActivity.class);
+		intent.putExtra("id", 0); // passing the database id of the card to the CardViewerActivity activity  
+		startActivity(intent);
+		finish(); // this activity must be terminated, so that user can't use back button to return to it
 	}
 }
