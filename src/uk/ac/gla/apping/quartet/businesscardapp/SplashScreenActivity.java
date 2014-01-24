@@ -4,7 +4,6 @@ import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 public class SplashScreenActivity extends Activity {
 	private static final int SLEEP_TIME = 3000; // sleep time in milliseconds 

@@ -4,15 +4,14 @@ import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
 public class MainActivity extends Activity {
 	
-	Button mButtonAdd;
-	Button mButtonCard;
+	private Button mButtonAdd;
+	private Button mButtonCard;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
