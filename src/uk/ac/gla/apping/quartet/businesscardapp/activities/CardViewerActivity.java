@@ -1,4 +1,4 @@
-package uk.ac.gla.apping.quartet.businesscardapp;
+package uk.ac.gla.apping.quartet.businesscardapp.activities;
 
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
