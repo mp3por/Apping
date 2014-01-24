@@ -3,7 +3,6 @@ package uk.ac.gla.apping.quartet.businesscardapp.activities;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
 import android.content.Intent;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
