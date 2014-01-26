@@ -27,9 +27,7 @@ public class MainActivity extends Activity {
 				Intent intent = new Intent(MainActivity.this, ImporterActivity.class);
 				startActivity(intent);
 			}
-				
 		});
-		
 		
 		mButtonCard = (Button) findViewById(R.id.buttonCard);
 		mButtonCard.setOnClickListener(new OnClickListener(){
@@ -39,8 +37,7 @@ public class MainActivity extends Activity {
 				Intent intent = new Intent(MainActivity.this, CardViewerActivity.class);
 				intent.putExtra("id", 0); // passing the database id of the card to the CardViewerActivity activity
 				startActivity(intent);
-			}
-				
+			}	
 		});
 		
 	}

@@ -16,7 +16,6 @@ public class CardViewerActivity extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_card_viewer);
@@ -25,11 +24,9 @@ public class CardViewerActivity extends Activity {
 		int id = senderIntent.getIntExtra("id", -1); // will return the id, if if was specified, or will return -1, if no id was specified
 		
 		mTextView = (TextView) findViewById(R.id.textViewId);
-		mButtonShare = (Button) findViewById(R.id.buttonShare);
-		
 		mTextView.setText("id: " + id);
 		
-		
+		mButtonShare = (Button) findViewById(R.id.buttonShare);
 		mButtonShare.setOnClickListener(new OnClickListener(){
 
 			@Override
@@ -40,9 +37,7 @@ public class CardViewerActivity extends Activity {
 				testIntent.putExtra(Intent.EXTRA_SUBJECT, "Haha no customer service from google!");    
 				testIntent.putExtra(Intent.EXTRA_EMAIL, recipients);  
 				startActivity(testIntent);  
-				
 			}
-			
 		});
 		
 	}

@@ -31,7 +31,6 @@ public class SplashScreenActivity extends Activity {
 					finish();
 				}
 			}
-			
 		};
 		
 		thread.start();

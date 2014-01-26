@@ -31,8 +31,7 @@ public class ImporterActivity extends Activity {
 			public void onClick(View arg0) {			
 				Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); 
 				startActivityForResult(cameraIntent, CAMERA_REQUEST);	
-			}
-				
+			}	
 		});
 		
 		
@@ -43,8 +42,7 @@ public class ImporterActivity extends Activity {
 			public void onClick(View arg0) {			
 				Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
 				startActivityForResult(intent, GALLERY_REQUEST);
-			}
-				
+			}	
 		});
 	}
 
