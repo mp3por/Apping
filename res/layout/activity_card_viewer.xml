@@ -16,6 +16,6 @@
         android:id="@+id/buttonShare"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SHARE" />
+        android:text="@string/button_share" />
 
 </LinearLayout>
