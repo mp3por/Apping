@@ -119,9 +119,6 @@ public class ContactHelper {
 		return contact;
 	}
 
-	/*
-	 * Getting contact count
-	 */
 	public int getContactCount(){
 		String sql = "SELECT COUNT(*) AS contact_count FROM " + ContactsDbHelper.TABLE_CONTACTS; 
 		Cursor cursor = dbHelper.getReadableDatabase().rawQuery(sql, null);
