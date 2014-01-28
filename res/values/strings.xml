@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Apping</string>
+    <string name="menu_advanced_search">Advanced search</string>
+    <string name="button_share">SHARE</string>
+    <string name="button_camera">CAMERA</string>
+    <string name="button_gallery">GALLERY</string>
+    <string name="button_add">ADD</string>
+    <string name="button_card">CARD</string>
+
+</resources>
