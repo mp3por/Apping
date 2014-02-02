@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#333333"
+        android:background="@color/search_bar_color"
         android:orientation="horizontal" >
 
         <ImageView
@@ -38,7 +38,7 @@
                 android:layout_weight="2"
                 android:paddingLeft="15dp"
                 android:background="@null"
-                android:hint="Search ..."
+                android:hint="@string/search_hint"
                 />
             <!-- LATER next imageView can be replaced by android:drawableRight="@drawable/button_search"  -->
 
