@@ -4,18 +4,24 @@ import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	
-	private Button mButtonAdd;
+	private ImageView mImageViewAdd;
+	private ImageView mImageViewSearch;
 	private Button mButtonCard;
+	private EditText mEditTextSearch;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -23,13 +29,42 @@ public class MainActivity extends Activity {
 		
 		setContentView(R.layout.activity_main);	
 		
-		mButtonAdd = (Button) findViewById(R.id.buttonAdd);
-		mButtonAdd.setOnClickListener(new OnClickListener(){
+		
+		mEditTextSearch = (EditText) findViewById(R.id.editTextSearch);
+		mEditTextSearch.addTextChangedListener(new TextWatcher() {
+			public void afterTextChanged(Editable s) {
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				CharSequence text = "Search will be implemented later";
+	        	Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+	        	toast.show();
+			}
+		});
+		
+		
+		
+		mImageViewAdd = (ImageView) findViewById(R.id.imageViewAdd);
+		mImageViewAdd.setOnClickListener(new OnClickListener(){
 				
 			@Override
 			public void onClick(View arg0) {			
 				Intent intent = new Intent(MainActivity.this, ImporterActivity.class);
 				startActivity(intent);
+			}
+		});
+		
+		mImageViewSearch = (ImageView) findViewById(R.id.imageViewSearch);
+		mImageViewSearch.setOnClickListener(new OnClickListener(){
+				
+			@Override
+			public void onClick(View arg0) {			
+	        	CharSequence text = "YAY! I will be replaced soon!";
+	        	Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+	        	toast.show();
 			}
 		});
 		
