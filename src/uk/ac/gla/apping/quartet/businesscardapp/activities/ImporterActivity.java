@@ -1,9 +1,17 @@
 package uk.ac.gla.apping.quartet.businesscardapp.activities;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -29,8 +37,43 @@ public class ImporterActivity extends Activity {
 				
 			@Override
 			public void onClick(View arg0) {			
-				Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); 
-				startActivityForResult(cameraIntent, CAMERA_REQUEST);	
+				Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+				// add check condition for security
+				if(cameraIntent.resolveActivity(getPackageManager()) != null){
+					// create the file where the photo should go
+					File photo = null;
+					try{
+						photo = createImageFile();
+					}catch(IOException ex){
+						ex.printStackTrace();
+					}
+					// continue only if the file was successfully created
+					if(photo != null){
+						cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
+						startActivityForResult(cameraIntent, CAMERA_REQUEST);
+					}
+						
+				}
+			}
+			
+			String mCurrentPhotoPath;
+			
+			// saving the image
+			private File createImageFile() throws IOException {
+			    // Create an image file name
+			    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+			    String imageFileName = "JPEG_" + timeStamp + "_";
+			    File storageDir = Environment.getExternalStoragePublicDirectory(
+			            Environment.DIRECTORY_PICTURES);
+			    File image = File.createTempFile(
+			        imageFileName,  /* prefix */
+			        ".jpg",         /* suffix */
+			        storageDir      /* directory */
+			    );
+
+			    // Save a file: path for use with ACTION_VIEW intents
+			    mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+			    return image;
 			}	
 		});
 		
