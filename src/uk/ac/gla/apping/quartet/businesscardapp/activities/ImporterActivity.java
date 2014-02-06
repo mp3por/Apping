@@ -25,6 +25,9 @@ public class ImporterActivity extends Activity {
 	private static final int CAMERA_REQUEST = 1888;
 	private static final int GALLERY_REQUEST = 3;
 	
+	/*
+	 * Just fixing some config problems :D */
+	
 	
 	private Button mButtonCamera;
 	private Button mButtonGallery;
