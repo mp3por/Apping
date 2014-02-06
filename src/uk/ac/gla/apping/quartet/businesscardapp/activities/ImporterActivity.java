@@ -1,6 +1,8 @@
 package uk.ac.gla.apping.quartet.businesscardapp.activities;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,6 +10,8 @@ import java.util.Date;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,6 +19,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 
 public class ImporterActivity extends Activity {
 	private static final int CAMERA_REQUEST = 1888;
@@ -23,6 +28,7 @@ public class ImporterActivity extends Activity {
 	
 	private Button mButtonCamera;
 	private Button mButtonGallery;
+	private ImageView mImage;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +37,7 @@ public class ImporterActivity extends Activity {
 		
 		setContentView(R.layout.activity_importer);
 		
-		
+		//mImage = (ImageView) findViewById(R.id.mImageViewCamera);
 		mButtonCamera = (Button) findViewById(R.id.buttonCamera);
 		mButtonCamera.setOnClickListener(new OnClickListener(){
 				
@@ -41,7 +47,7 @@ public class ImporterActivity extends Activity {
 				// add check condition for security
 				if(cameraIntent.resolveActivity(getPackageManager()) != null){
 					// create the file where the photo should go
-					File photo = null;
+				/*	File photo = null;
 					try{
 						photo = createImageFile();
 					}catch(IOException ex){
@@ -51,8 +57,8 @@ public class ImporterActivity extends Activity {
 					if(photo != null){
 						cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
 						startActivityForResult(cameraIntent, CAMERA_REQUEST);
-					}
-						
+					} */
+					startActivityForResult(cameraIntent, CAMERA_REQUEST);
 				}
 			}
 			
@@ -75,6 +81,7 @@ public class ImporterActivity extends Activity {
 			    mCurrentPhotoPath = "file:" + image.getAbsolutePath();
 			    return image;
 			}	
+		
 		});
 		
 		
@@ -93,7 +100,11 @@ public class ImporterActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) { // camera returned picture
-			// Bitmap photo = (Bitmap) data.getExtras().get("data");
+			Bitmap photo = (Bitmap) data.getExtras().get("data");
+			 File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.jpg");
+			 mImage = (ImageView) findViewById(R.id.mImageViewCamera);
+			 mImage.setImageBitmap(photo);
+			// mImage.setImageBitmap(decodeSampledBitmapFromFile(file.getAbsolutePath(), 50, 50));
 		} else if (requestCode == GALLERY_REQUEST && resultCode == Activity.RESULT_OK) { // gallery returned picture
 			// Uri selectedImage = data.getData();
 	        // Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
@@ -106,9 +117,11 @@ public class ImporterActivity extends Activity {
 		
 		// save in the db here
 		
-		Intent intent = new Intent(ImporterActivity.this, CardViewerActivity.class);
-		intent.putExtra("id", 0); // passing the database id of the card to the CardViewerActivity activity  
-		startActivity(intent);
-		finish(); // this activity must be terminated, so that user can't use back button to return to it
+		//Intent intent = new Intent(ImporterActivity.this, CardViewerActivity.class);
+		//intent.putExtra("id", 0); // passing the database id of the card to the CardViewerActivity activity  
+		//startActivity(intent);
+		//finish(); // this activity must be terminated, so that user can't use back button to return to it
 	}
+	
+	
 }
