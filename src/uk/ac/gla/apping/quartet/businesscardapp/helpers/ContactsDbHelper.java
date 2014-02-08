@@ -20,7 +20,7 @@ public class ContactsDbHelper extends SQLiteOpenHelper {
 	public static String[] allColumns = {COLUMN_ID, COLUMN_NAME, COLUMN_EMAIL, COLUMN_NUMBER, COLUMN_COMPANY, COLUMN_THUMBNAIL, COLUMN_FRONT_IMAGE, COLUMN_BACK_IMAGE};
 
 	private static final String DATABASE_NAME = "contacts.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 
 	private static final String DATABASE_CREATE = "create table "
 			+ TABLE_CONTACTS + "(" + COLUMN_ID
@@ -29,8 +29,8 @@ public class ContactsDbHelper extends SQLiteOpenHelper {
 			+ COLUMN_EMAIL + " character null,"
 			+ COLUMN_NUMBER + " character null,"
 			+ COLUMN_COMPANY + " character null,"
-			+ COLUMN_THUMBNAIL + " BLOB null"
-			+ COLUMN_FRONT_IMAGE + " BLOB null"
+			+ COLUMN_THUMBNAIL + " BLOB null,"
+			+ COLUMN_FRONT_IMAGE + " BLOB null,"
 			+ COLUMN_BACK_IMAGE + " BLOB null"
 			+ ");";
 
