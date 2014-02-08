@@ -2,10 +2,12 @@ package uk.ac.gla.apping.quatret.businesscardapp.adapters;
 
 import java.util.ArrayList;
 
+import uk.ac.gla.apping.quartet.businesscardapp.activities.CardViewerActivity;
 import uk.ac.gla.apping.quartet.businesscardapp.data.Contact;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class ContactAdapter extends BaseAdapter {
 	private static LayoutInflater inflater = null;
@@ -47,32 +48,30 @@ public class ContactAdapter extends BaseAdapter {
         if(convertView==null) {
             vi = inflater.inflate(R.layout.list_activity_main, null);
         }
- 
-        TextView title = (TextView) vi.findViewById(R.id.text); // title
-        ImageView thumbnail = (ImageView) vi.findViewById(R.id.image); // artist name
+          
+        ImageView thumbnail = (ImageView) vi.findViewById(R.id.image);
+        TextView name = (TextView) vi.findViewById(R.id.textViewContactName);
+        TextView number = (TextView) vi.findViewById(R.id.textViewContactNumber);
+        TextView email = (TextView) vi.findViewById(R.id.textViewContactEmail);
+        TextView company = (TextView) vi.findViewById(R.id.textViewContactCompany);
 
+        final Contact contact = mContacts.get(position);
         
-        Contact contact = mContacts.get(position);
-        
-        title.setText(contact.getName());
-        
+        name.setText(contact.getName());
+        number.setText(contact.getNumber());
+        email.setText(contact.getEmail());
+        company.setText(contact.getCompany());
+                
         thumbnail.setImageBitmap(BitmapFactory.decodeByteArray(contact.getThumbnail(), 0, contact.getThumbnail().length));
-        
         thumbnail.setOnClickListener(new OnClickListener(){
 
 			@Override
-			public void onClick(View arg0) {
-				CharSequence text = "Search will be implemented later";
-	        	Toast toast = Toast.makeText(mActivity, text, Toast.LENGTH_SHORT);
-	        	toast.show();
+			public void onClick(View arg0) {	
+				Intent intent = new Intent(mActivity, CardViewerActivity.class);
+				intent.putExtra("id", contact.getId()); // passing the database id of the card to the CardViewerActivity activity
+				mActivity.startActivity(intent);
 			}});
  
-        // Setting all values in listview
-        /*title.setText(song.get(CustomizedListView.KEY_TITLE));
-        artist.setText(song.get(CustomizedListView.KEY_ARTIST));
-        duration.setText(song.get(CustomizedListView.KEY_DURATION));
-        imageLoader.DisplayImage(song.get(CustomizedListView.KEY_THUMB_URL), thumb_image);
-        */
         return vi;
     }
 }
