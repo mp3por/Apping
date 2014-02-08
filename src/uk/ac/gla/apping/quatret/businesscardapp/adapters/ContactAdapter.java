@@ -9,6 +9,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,20 +21,24 @@ import android.widget.TextView;
 
 public class ContactAdapter extends BaseAdapter {
 	private static LayoutInflater inflater = null;
+
+	private Spanned highlightMatch(String text) {
+		return Html.fromHtml(text.replace(mMatch, "<b>" + mMatch + "</b>"));
+	}
 	
     private Activity mActivity;
     private ArrayList<Contact> mContacts;
-    private int mSize;
+
+	private String mMatch;
  
-    public ContactAdapter(Activity activity, ArrayList<Contact> contacts) {
+    public ContactAdapter(Activity activity, ArrayList<Contact> contacts, String search) {
         mActivity = activity;
         mContacts = contacts;
-        mSize = contacts.size();
         inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
  
     public int getCount() {
-        return mSize;
+        return mContacts.size();
     }
  
     public Object getItem(int position) {
@@ -44,8 +50,9 @@ public class ContactAdapter extends BaseAdapter {
     }
  
     public View getView(int position, View convertView, ViewGroup parent) {
-        View vi = convertView;
-        if(convertView==null) {
+        // reusing views to ensure that do not run out of memory
+    	View vi = convertView;
+        if(convertView == null) {
             vi = inflater.inflate(R.layout.list_activity_main, null);
         }
           
@@ -56,11 +63,31 @@ public class ContactAdapter extends BaseAdapter {
         TextView company = (TextView) vi.findViewById(R.id.textViewContactCompany);
 
         final Contact contact = mContacts.get(position);
+ 
+        name.setText(highlightMatch(contact.getName()));
         
-        name.setText(contact.getName());
-        number.setText(contact.getNumber());
-        email.setText(contact.getEmail());
-        company.setText(contact.getCompany());
+        if (contact.getNumber().contains(mMatch)){
+        	number.setVisibility(View.VISIBLE);
+        	number.setText(highlightMatch(contact.getNumber()));
+        } else {
+        	number.setVisibility(View.GONE);
+        }
+        
+        
+        if (contact.getCompany().contains(mMatch)){
+        	company.setVisibility(View.VISIBLE);
+        	company.setText(highlightMatch(contact.getCompany()));
+        } else {
+        	number.setVisibility(View.GONE);
+        }
+        
+        
+        if (contact.getEmail().contains(mMatch)){
+        	email.setVisibility(View.VISIBLE);
+        	email.setText(highlightMatch(contact.getEmail()));
+        } else {
+        	email.setVisibility(View.GONE);
+        }
                 
         thumbnail.setImageBitmap(BitmapFactory.decodeByteArray(contact.getThumbnail(), 0, contact.getThumbnail().length));
         thumbnail.setOnClickListener(new OnClickListener(){
@@ -71,7 +98,27 @@ public class ContactAdapter extends BaseAdapter {
 				intent.putExtra("id", contact.getId()); // passing the database id of the card to the CardViewerActivity activity
 				mActivity.startActivity(intent);
 			}});
- 
+        
         return vi;
     }
+
+	public void filter(ArrayList<Contact> allContacts, String needle) {
+		
+		
+		if (!needle.equals("")) {	
+			ArrayList<Contact> filtered = new ArrayList<Contact>();
+			for (Contact contact : allContacts) {
+				if(contact.getName().contains(needle) || contact.getCompany().contains(needle) || contact.getEmail().contains(needle)) {
+					filtered.add(contact);
+				}
+			}
+		
+			mContacts = filtered;
+		} else {
+			mContacts = allContacts;
+		}
+		
+		mMatch = needle;
+		notifyDataSetChanged(); 
+	}
 }

@@ -30,6 +30,7 @@ public class MainActivity extends Activity {
 	private EditText mEditTextSearch;
 	private ContactAdapter mContactAdapter;
 	private ListView mListViewContacts;
+	private ArrayList<Contact> mArrayListContacts;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +48,8 @@ public class MainActivity extends Activity {
 			}
 
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				CharSequence text = "Search will be implemented later";
-	        	Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
-	        	toast.show();
+				mContactAdapter.filter(mArrayListContacts, mEditTextSearch.getText().toString());
+				mContactAdapter.notifyDataSetChanged();
 			}
 		});
 		
@@ -87,6 +87,14 @@ public class MainActivity extends Activity {
 			}	
 		});	
 	}
+	
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mArrayListContacts.clear();
+		mArrayListContacts = null;
+	}
 
 	
 	// update the adapter with contacts whenever the activity is brought to the front
@@ -97,11 +105,13 @@ public class MainActivity extends Activity {
 		
     	ContactHelper db = ContactHelper.getInstance(this);
 		
-		ArrayList<Contact> contacts = (ArrayList<Contact>) db.getAllContacts();
+    	mArrayListContacts = (ArrayList<Contact>) db.getAllContacts();
 				
 		mListViewContacts = (ListView) findViewById(R.id.listViewContacts);
 		 
-		mContactAdapter = new ContactAdapter(this, contacts);
+		mContactAdapter = new ContactAdapter(this, mArrayListContacts, "");
+		mContactAdapter.filter(mArrayListContacts, mEditTextSearch.getText().toString());
+		
 		mListViewContacts.setAdapter(mContactAdapter);
 		
 		super.onResume();

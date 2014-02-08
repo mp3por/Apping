@@ -27,7 +27,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"
             android:layout_marginLeft="10dip"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/textViewContactEmail"
@@ -35,7 +36,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"
             android:layout_marginLeft="10dip"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/textViewContactCompany"
@@ -43,7 +45,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"
             android:layout_marginLeft="10dip"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:visibility="gone" />
     </LinearLayout>
+    
 
 </LinearLayout>

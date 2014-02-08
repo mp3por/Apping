@@ -31,6 +31,8 @@
             android:background="@drawable/image_search_bar"
             android:orientation="horizontal" >
 
+            
+            <!--  can be possibly replaced by SearchView, if any of those features will be needed -->
             <EditText
                 android:id="@+id/editTextSearch"
                 android:layout_width="match_parent"
