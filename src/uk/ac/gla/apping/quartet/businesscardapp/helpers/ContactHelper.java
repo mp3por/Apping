@@ -30,9 +30,9 @@ public class ContactHelper {
 		ContentValues values = new ContentValues();
 
 		values.put(ContactsDbHelper.COLUMN_NAME, contact.getName());
-		values.put(ContactsDbHelper.COLUMN_EMAIL, contact.getName());
+		values.put(ContactsDbHelper.COLUMN_EMAIL, contact.getEmail());
 		values.put(ContactsDbHelper.COLUMN_NUMBER, contact.getNumber());
-		values.put(ContactsDbHelper.COLUMN_COMPANY, contact.getName());
+		values.put(ContactsDbHelper.COLUMN_COMPANY, contact.getCompany());
 		values.put(ContactsDbHelper.COLUMN_THUMBNAIL, contact.getThumbnail());
 		values.put(ContactsDbHelper.COLUMN_FRONT_IMAGE, contact.getFrontImage());
 		values.put(ContactsDbHelper.COLUMN_BACK_IMAGE, contact.getBackImage());
@@ -56,9 +56,9 @@ public class ContactHelper {
 	public void updateContact(Contact contact) { // ContactWithImages
 		ContentValues values = new ContentValues();
 		values.put(ContactsDbHelper.COLUMN_NAME, contact.getName());
-		values.put(ContactsDbHelper.COLUMN_EMAIL, contact.getName());
+		values.put(ContactsDbHelper.COLUMN_EMAIL, contact.getEmail());
 		values.put(ContactsDbHelper.COLUMN_NUMBER, contact.getNumber());
-		values.put(ContactsDbHelper.COLUMN_COMPANY, contact.getName());
+		values.put(ContactsDbHelper.COLUMN_COMPANY, contact.getCompany());
 		// values.put(ContactsDbHelper.COLUMN_THUMBNAIL, contact.getThumbnail());
 		// values.put(ContactsDbHelper.COLUMN_FRONT_IMAGE, contact.getFrontImage());
 		// values.put(ContactsDbHelper.COLUMN_BACK_IMAGE, contact.getBackImage());
