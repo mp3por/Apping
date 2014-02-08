@@ -66,23 +66,21 @@ public class ContactAdapter extends BaseAdapter {
  
         name.setText(highlightMatch(contact.getName()));
         
-        if (contact.getNumber().contains(mMatch)){
+        if (!mMatch.equals("") && contact.getNumber().contains(mMatch)){
         	number.setVisibility(View.VISIBLE);
         	number.setText(highlightMatch(contact.getNumber()));
         } else {
         	number.setVisibility(View.GONE);
-        }
-        
-        
-        if (contact.getCompany().contains(mMatch)){
+        }      
+
+        if (!mMatch.equals("") && contact.getCompany().contains(mMatch)){
         	company.setVisibility(View.VISIBLE);
         	company.setText(highlightMatch(contact.getCompany()));
         } else {
         	number.setVisibility(View.GONE);
         }
         
-        
-        if (contact.getEmail().contains(mMatch)){
+        if (!mMatch.equals("") && contact.getEmail().contains(mMatch)){
         	email.setVisibility(View.VISIBLE);
         	email.setText(highlightMatch(contact.getEmail()));
         } else {

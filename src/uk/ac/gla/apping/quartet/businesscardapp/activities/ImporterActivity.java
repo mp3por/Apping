@@ -107,36 +107,25 @@ public class ImporterActivity extends Activity {
 			
 			//------------------------- TMP CODE FOR TESTING -------------------------\\
 			
-			Log.i("aftercamera", "1");
-			// aspect ratio? never heard of it 
+			// aspect ratio? never heard of it... 
 			photo = Bitmap.createScaledBitmap(photo, 200, 200, true);
 
-			// convert image to PNG format
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
-			photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+			
+			
+			//png takes much more space then jpg
+			//photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+			photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 			byte[] byteThumbnail = stream.toByteArray();
-			
-			Log.i("aftercamera", "2");
-			
+
 			ContactWithImages contact = new ContactWithImages();
-			contact.setName("Thisname"+ (new Random().nextInt(1000)));
 			contact.setName("Thissurname"+ (new Random().nextInt(1000)));
 			contact.setEmail("test@test.com");
 			contact.setCompany("RIP APPING");
 			contact.setNumber("+44711111");
 			contact.setThumbnail(byteThumbnail);
-			
-			Log.i("aftercamera", "3");
-			
 			ContactHelper db = ContactHelper.getInstance(this);
-			
-			Log.i("aftercamera", "4");
-			
 			db.createContact(contact);
-			
-			Log.i("aftercamera", "5");
-			
-			
 			
 			//------------------------- END [TMP CODE FOR TESTING] -------------------------\\
 			

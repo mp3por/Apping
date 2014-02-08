@@ -80,7 +80,8 @@ public class ContactHelper {
 	}
 
 	public List<Contact> getAllContacts() {
-		List<Contact> contacts = new ArrayList<Contact>();
+		// allocating the right arraylist size
+		List<Contact> contacts = new ArrayList<Contact>(getContactCount() + 2);
 
 		Cursor cursor = dbHelper.getReadableDatabase().query(ContactsDbHelper.TABLE_CONTACTS,
 				ContactsDbHelper.allColumns, null, null, null, null, null);
