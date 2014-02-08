@@ -1,6 +1,11 @@
 package uk.ac.gla.apping.quartet.businesscardapp.activities;
 
+import java.util.ArrayList;
+
+import uk.ac.gla.apping.quartet.businesscardapp.data.Contact;
+import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
+import uk.ac.gla.apping.quatret.businesscardapp.adapters.ContactAdapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,9 +16,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -22,6 +30,8 @@ public class MainActivity extends Activity {
 	private ImageView mImageViewSearch;
 	private Button mButtonCard;
 	private EditText mEditTextSearch;
+	private ContactAdapter mContactAdapter;
+	private ListView mListViewContacts;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +89,15 @@ public class MainActivity extends Activity {
 			}	
 		});
 		
+
+		ContactHelper db = ContactHelper.getInstance(this);
+		
+		ArrayList<Contact> contacts = (ArrayList<Contact>) db.getAllContacts();
+				
+		mListViewContacts = (ListView) findViewById(R.id.listViewContacts);
+		 
+		mContactAdapter = new ContactAdapter(this, contacts);
+		mListViewContacts.setAdapter(mContactAdapter);		
 	}
 
 	
