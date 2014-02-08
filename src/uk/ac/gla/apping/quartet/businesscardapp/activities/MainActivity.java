@@ -16,8 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -87,21 +85,30 @@ public class MainActivity extends Activity {
 				intent.putExtra("id", 0); // passing the database id of the card to the CardViewerActivity activity
 				startActivity(intent);
 			}	
-		});
-		
+		});	
+	}
 
-		ContactHelper db = ContactHelper.getInstance(this);
+	
+	// update the adapter with contacts whenever the activity is brought to the front
+	// TODO: may go for cleaner solution - check contact count and update adapter only if contact count has changed
+	// provided that it is impossible to add one contact and delete another contact w/o opening MainActivity inbetween 
+    @Override
+	protected void onResume() {
+		
+    	ContactHelper db = ContactHelper.getInstance(this);
 		
 		ArrayList<Contact> contacts = (ArrayList<Contact>) db.getAllContacts();
 				
 		mListViewContacts = (ListView) findViewById(R.id.listViewContacts);
 		 
 		mContactAdapter = new ContactAdapter(this, contacts);
-		mListViewContacts.setAdapter(mContactAdapter);		
+		mListViewContacts.setAdapter(mContactAdapter);
+		
+		super.onResume();
 	}
 
-	
-    @Override
+
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
     	MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main, menu);
