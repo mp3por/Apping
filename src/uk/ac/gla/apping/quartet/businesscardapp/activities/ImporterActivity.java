@@ -2,20 +2,20 @@ package uk.ac.gla.apping.quartet.businesscardapp.activities;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
+import uk.ac.gla.apping.quartet.businesscardapp.data.ContactWithImages;
+import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -104,7 +104,45 @@ public class ImporterActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) { // camera returned picture
 			Bitmap photo = (Bitmap) data.getExtras().get("data");
-			 File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.jpg");
+			
+			//------------------------- TMP CODE FOR TESTING -------------------------\\
+			
+			Log.i("aftercamera", "1");
+			// aspect ratio? never heard of it 
+			photo = Bitmap.createScaledBitmap(photo, 200, 200, true);
+
+			// convert image to PNG format
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+			byte[] byteThumbnail = stream.toByteArray();
+			
+			Log.i("aftercamera", "2");
+			
+			ContactWithImages contact = new ContactWithImages();
+			contact.setName("Thisname"+ (new Random().nextInt(1000)));
+			contact.setName("Thissurname"+ (new Random().nextInt(1000)));
+			contact.setEmail("test@test.com");
+			contact.setCompany("RIP APPING");
+			contact.setNumber("+44711111");
+			contact.setThumbnail(byteThumbnail);
+			
+			Log.i("aftercamera", "3");
+			
+			ContactHelper db = ContactHelper.getInstance(this);
+			
+			Log.i("aftercamera", "4");
+			
+			db.createContact(contact);
+			
+			Log.i("aftercamera", "5");
+			
+			
+			
+			//------------------------- END [TMP CODE FOR TESTING] -------------------------\\
+			
+			
+			
+			File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.jpg");
 			 mImage = (ImageView) findViewById(R.id.mImageViewCamera);
 			 mImage.setImageBitmap(photo);
 			// mImage.setImageBitmap(decodeSampledBitmapFromFile(file.getAbsolutePath(), 50, 50));
