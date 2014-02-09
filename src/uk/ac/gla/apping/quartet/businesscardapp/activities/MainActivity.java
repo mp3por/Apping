@@ -56,8 +56,10 @@ public class MainActivity extends Activity {
 			}
 
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				mContactAdapter.filter(mArrayListContacts, mEditTextSearch.getText().toString());
-				mContactAdapter.notifyDataSetChanged();
+				if (mContactCount != 0) {
+					mContactAdapter.filter(mArrayListContacts, mEditTextSearch.getText().toString());
+					mContactAdapter.notifyDataSetChanged();
+				}
 			}
 		});
 		
