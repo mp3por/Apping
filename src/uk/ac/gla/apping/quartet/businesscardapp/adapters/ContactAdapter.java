@@ -1,4 +1,4 @@
-package uk.ac.gla.apping.quatret.businesscardapp.adapters;
+package uk.ac.gla.apping.quartet.businesscardapp.adapters;
 
 import java.util.ArrayList;
 

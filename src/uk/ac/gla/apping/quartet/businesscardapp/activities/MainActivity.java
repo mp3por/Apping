@@ -3,11 +3,11 @@ package uk.ac.gla.apping.quartet.businesscardapp.activities;
 import java.util.ArrayList;
 import java.util.Random;
 
+import uk.ac.gla.apping.quartet.businesscardapp.adapters.ContactAdapter;
 import uk.ac.gla.apping.quartet.businesscardapp.data.Contact;
 import uk.ac.gla.apping.quartet.businesscardapp.data.ContactWithImages;
 import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
-import uk.ac.gla.apping.quatret.businesscardapp.adapters.ContactAdapter;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -169,7 +169,6 @@ public class MainActivity extends Activity {
 		@Override
 		protected Boolean doInBackground(final String... args) {
 			ContactHelper db = ContactHelper.getInstance(getApplicationContext());
-			
         	
         	int copyCount = Integer.parseInt(((EditText) findViewById(R.id.editTextCopyCount)).getText().toString());
         	for (int i = 0; i < copyCount; i++) {
@@ -178,8 +177,7 @@ public class MainActivity extends Activity {
     			contact.setEmail("test@test.com");
     			contact.setCompany("RIP APPING");
     			contact.setNumber("+44711111");
-    			contact.setThumbnail(db.getContactById(1).getThumbnail());
-    			
+    			contact.setThumbnail(db.getContactById(1).getThumbnail());	
         		db.createContact(contact);
         	}
 			
