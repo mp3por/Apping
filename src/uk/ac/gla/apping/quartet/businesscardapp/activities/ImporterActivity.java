@@ -69,10 +69,10 @@ public class ImporterActivity extends Activity {
 			public void onClick(View arg0) {
 				// OCR save test
 				OCRSaveTest();
-				startCameraActivity();
+				ViliStartCameraActivity();
 
 				// Nikis code
-				//NikiStartCamera();
+				NikiStartCamera();
 
 			}
 
@@ -91,17 +91,14 @@ public class ImporterActivity extends Activity {
 		});
 	}
 
-	protected void startCameraActivity() {
+	protected void ViliStartCameraActivity() {
 		File file = new File(_path);
 		Uri outputFileUri = Uri.fromFile(file);
 
-		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		
-		if (intent.resolveActivity(getPackageManager()) != null){
-			intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-			startActivityForResult(intent, CAMERA_REQUEST);
-		}
-		
+		final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+
+		startActivityForResult(intent, 0);
 	}
 
 	protected File NikiSavePic() {
@@ -245,10 +242,6 @@ public class ImporterActivity extends Activity {
 			//photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
 			photo.compress(Bitmap.CompressFormat.JPEG, 70, stream);
 			byte[] byteThumbnail = stream.toByteArray();
-			
-			//add to image view
-			Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(stream.toByteArray()));
-			mImage.setImageBitmap(decoded);
 
 			ContactWithImages contact = new ContactWithImages();
 			contact.setName("Thissurname"+ (new Random().nextInt(1000)));
@@ -270,17 +263,19 @@ public class ImporterActivity extends Activity {
 
 			//String pathToImage = mImageCaptureUri.getPath();
 
-		
+			//scaling
+			int targetW = 480;
+			int targetH = 320;
 			//Bitmap b = decodeSampledBitmap(pathToImage, targetW, targetH);
 
-			//ByteArrayOutputStream out = new ByteArrayOutputStream();
-			//photo.compress(Bitmap.CompressFormat.JPEG, 70, out);
-			//Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			photo.compress(Bitmap.CompressFormat.JPEG, 70, out);
+			Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
 
 			Log.e("Original   dimensions", photo.getRowBytes()*photo.getHeight() + " ");
 			Log.e("Compressed dimensions", decoded.getRowBytes()*decoded.getHeight()+" ");
 
-			//mImage.setImageBitmap(decoded);
+			mImage.setImageBitmap(decoded);
 		} else if (requestCode == GALLERY_REQUEST
 				&& resultCode == Activity.RESULT_OK) { // gallery returned
 			// picture
