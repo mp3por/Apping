@@ -72,7 +72,7 @@ public class ImporterActivity extends Activity {
 				startCameraActivity();
 
 				// Nikis code
-				NikiStartCamera();
+				//NikiStartCamera();
 
 			}
 
@@ -100,6 +100,7 @@ public class ImporterActivity extends Activity {
 		if (intent.resolveActivity(getPackageManager()) != null){
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
 			startActivityForResult(intent, 0);
+
 		}
 		
 	}
