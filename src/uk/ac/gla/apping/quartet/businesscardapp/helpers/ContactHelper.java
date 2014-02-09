@@ -34,23 +34,51 @@ public class ContactHelper {
 		values.put(ContactsDbHelper.COLUMN_NUMBER, contact.getNumber());
 		values.put(ContactsDbHelper.COLUMN_COMPANY, contact.getCompany());
 		values.put(ContactsDbHelper.COLUMN_THUMBNAIL, contact.getThumbnail());
-		values.put(ContactsDbHelper.COLUMN_FRONT_IMAGE, contact.getFrontImage());
-		values.put(ContactsDbHelper.COLUMN_BACK_IMAGE, contact.getBackImage());
 		
-		long insertId = -1;
+		ContentValues values2 = new ContentValues();
+		values2.put(ContactsDbHelper.COLUMN_FRONT_IMAGE, contact.getFrontImage());
+		values2.put(ContactsDbHelper.COLUMN_BACK_IMAGE, contact.getBackImage());
+		
+		long insertId = -1, insertId2 = -1;
 		try {
+			dbHelper.getWritableDatabase().beginTransaction();
 			insertId = dbHelper.getWritableDatabase().insertOrThrow(ContactsDbHelper.TABLE_CONTACTS, null, values);
+			insertId2 = dbHelper.getWritableDatabase().insertOrThrow(ContactsDbHelper.TABLE_CONTACT_IMAGES, null, values2);
+			
+			if (insertId != insertId2) {
+				Log.e("ContactHelper", "Table insert ids don't match!");
+				dbHelper.getWritableDatabase().delete(ContactsDbHelper.TABLE_CONTACTS, ContactsDbHelper.COLUMN_ID
+						+ " = " + insertId, null);
+				dbHelper.getWritableDatabase().delete(ContactsDbHelper.TABLE_CONTACT_IMAGES, ContactsDbHelper.COLUMN_ID
+						+ " = " + insertId2, null);	
+			}
+			
+			dbHelper.getWritableDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			dbHelper.getWritableDatabase().endTransaction();
 		}
+		
+		Log.i("ContactHelper", "1");
 
 		Cursor cursor = dbHelper.getReadableDatabase().query(ContactsDbHelper.TABLE_CONTACTS,
-				ContactsDbHelper.allColumns, ContactsDbHelper.COLUMN_ID + " = " + insertId, null, null, null, null);
-
+				ContactsDbHelper.allContactColumns, ContactsDbHelper.COLUMN_ID + " = " + insertId, null, null, null, null);
 		cursor.moveToFirst();
-		ContactWithImages c = cursorToContactWithImages(cursor);
+		
+		Log.i("ContactHelper", "2");
+		
+		Cursor cursor2 = dbHelper.getReadableDatabase().query(ContactsDbHelper.TABLE_CONTACT_IMAGES,
+				ContactsDbHelper.allContactImageColumns, ContactsDbHelper.COLUMN_ID + " = " + insertId, null, null, null, null);
+		cursor2.moveToFirst();
+		
+		Log.i("ContactHelper", "3");
+		ContactWithImages contactWithImages = cursorToContactWithImages(cursor, cursor2);
 		cursor.close();
-		return c;
+		cursor2.close();
+		
+		Log.i("ContactHelper", "4");
+		return contactWithImages;
 	}
 
 	public void updateContact(Contact contact) { // ContactWithImages
@@ -59,24 +87,28 @@ public class ContactHelper {
 		values.put(ContactsDbHelper.COLUMN_EMAIL, contact.getEmail());
 		values.put(ContactsDbHelper.COLUMN_NUMBER, contact.getNumber());
 		values.put(ContactsDbHelper.COLUMN_COMPANY, contact.getCompany());
-		// values.put(ContactsDbHelper.COLUMN_THUMBNAIL, contact.getThumbnail());
-		// values.put(ContactsDbHelper.COLUMN_FRONT_IMAGE, contact.getFrontImage());
-		// values.put(ContactsDbHelper.COLUMN_BACK_IMAGE, contact.getBackImage());
 
 		dbHelper.getWritableDatabase().update(ContactsDbHelper.TABLE_CONTACTS, values, "id = ?", new String[]{Integer.toString(contact.getId())});
 	}
 
 	public void deleteContact(Contact contact) {
-		int id = contact.getId();
-		Log.i("Del", "Contact deleted with id: " + id);
-		dbHelper.getWritableDatabase().delete(ContactsDbHelper.TABLE_CONTACTS, ContactsDbHelper.COLUMN_ID
-				+ " = " + id, null);
+		deleteContact(contact.getId());
 	}
 
 	public void deleteContact(int id) {
 		Log.i("Del", "Contact deleted with id: " + id);
-		dbHelper.getWritableDatabase().delete(ContactsDbHelper.TABLE_CONTACTS, ContactsDbHelper.COLUMN_ID
+		dbHelper.getWritableDatabase().beginTransaction();
+		
+		int affectedRows = dbHelper.getWritableDatabase().delete(ContactsDbHelper.TABLE_CONTACTS, ContactsDbHelper.COLUMN_ID
 				+ " = " + id, null);
+		int affectedRows2 = dbHelper.getWritableDatabase().delete(ContactsDbHelper.TABLE_CONTACT_IMAGES, ContactsDbHelper.COLUMN_ID
+				+ " = " + id, null);
+		
+		if (affectedRows == affectedRows2) {
+			dbHelper.getWritableDatabase().setTransactionSuccessful();
+		}
+		
+		dbHelper.getWritableDatabase().endTransaction();
 	}
 
 	public List<Contact> getAllContacts() {
@@ -84,7 +116,7 @@ public class ContactHelper {
 		List<Contact> contacts = new ArrayList<Contact>(getContactCount() + 2);
 
 		Cursor cursor = dbHelper.getReadableDatabase().query(ContactsDbHelper.TABLE_CONTACTS,
-				ContactsDbHelper.allColumns, null, null, null, null, null);
+				ContactsDbHelper.allContactColumns, null, null, null, null, null);
 
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
@@ -100,7 +132,7 @@ public class ContactHelper {
 	
 	public Contact getContactById(int id) {
 		Cursor cursor = dbHelper.getReadableDatabase().query(ContactsDbHelper.TABLE_CONTACTS,
-				ContactsDbHelper.allColumns, ContactsDbHelper.COLUMN_ID + "=" + id, null, null, null, null);
+				ContactsDbHelper.allContactColumns, ContactsDbHelper.COLUMN_ID + "=" + id, null, null, null, null);
 
 		cursor.moveToFirst();
 		Contact contact = cursorToContact(cursor);
@@ -111,12 +143,19 @@ public class ContactHelper {
 	
 	public ContactWithImages getContactWithImagesById(int id) {
 		Cursor cursor = dbHelper.getReadableDatabase().query(ContactsDbHelper.TABLE_CONTACTS,
-				ContactsDbHelper.allColumns, ContactsDbHelper.COLUMN_ID + "=" + id, null, null, null, null);
+				ContactsDbHelper.allContactColumns, ContactsDbHelper.COLUMN_ID + "=" + id, null, null, null, null);
 
 		cursor.moveToFirst();
-		ContactWithImages contact = cursorToContactWithImages(cursor);
+		
+		Cursor cursor2 = dbHelper.getReadableDatabase().query(ContactsDbHelper.TABLE_CONTACTS,
+				ContactsDbHelper.allContactImageColumns, ContactsDbHelper.COLUMN_ID + "=" + id, null, null, null, null);
+		
+		cursor.moveToFirst();
+		
+		ContactWithImages contact = cursorToContactWithImages(cursor, cursor2);
 
 		cursor.close();
+		cursor2.close();
 		return contact;
 	}
 
@@ -147,7 +186,7 @@ public class ContactHelper {
 	/*
 	 * Converting from cursor to ContactWithImages
 	 */
-	private ContactWithImages cursorToContactWithImages(Cursor cursor) {
+	private ContactWithImages cursorToContactWithImages(Cursor cursor, Cursor cursor2) {
 		ContactWithImages contact = new ContactWithImages();
 		contact.setId(cursor.getInt(cursor.getColumnIndex(ContactsDbHelper.COLUMN_ID)));
 		
@@ -155,10 +194,10 @@ public class ContactHelper {
 		contact.setEmail(cursor.getString(cursor.getColumnIndex(ContactsDbHelper.COLUMN_EMAIL)));
 		contact.setNumber(cursor.getString(cursor.getColumnIndex(ContactsDbHelper.COLUMN_NUMBER)));
 		contact.setCompany(cursor.getString(cursor.getColumnIndex(ContactsDbHelper.COLUMN_COMPANY)));
-		
 		contact.setThumbnail(cursor.getBlob(cursor.getColumnIndex(ContactsDbHelper.COLUMN_THUMBNAIL)));
-		contact.setFrontImage(cursor.getBlob(cursor.getColumnIndex(ContactsDbHelper.COLUMN_FRONT_IMAGE)));
-		contact.setBackImage(cursor.getBlob(cursor.getColumnIndex(ContactsDbHelper.COLUMN_BACK_IMAGE)));
+		
+		contact.setFrontImage(cursor2.getBlob(cursor2.getColumnIndex(ContactsDbHelper.COLUMN_FRONT_IMAGE)));
+		contact.setBackImage(cursor2.getBlob(cursor2.getColumnIndex(ContactsDbHelper.COLUMN_BACK_IMAGE)));
 		
 		return contact;
 	}
