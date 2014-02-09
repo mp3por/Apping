@@ -38,6 +38,7 @@ public class MainActivity extends Activity {
 	private ListView mListViewContacts;
 	private ArrayList<Contact> mArrayListContacts;
 	private ContactHelper db = ContactHelper.getInstance(this);
+	private int mContactCount;
 	
 	
 	@Override
@@ -96,23 +97,19 @@ public class MainActivity extends Activity {
 				
 			}
 		});
-	}
 	
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		mArrayListContacts.clear();
-		mArrayListContacts = null;
 	}
 
 	
-	// update the adapter with contacts whenever the activity is brought to the front
-	// TODO: may go for cleaner solution - check contact count and update adapter only if contact count has changed
-	// provided that it is impossible to add one contact and delete another contact w/o opening MainActivity inbetween 
     @Override
-	protected void onResume() {	
-    	updateAdapter();
+	protected void onResume() {
+    	// update the adapter with contacts whenever the activity is brought to the front
+    	// check contact count and update adapter only if contact count has changed
+    	// provided that it is impossible to add one contact and delete another contact w/o opening MainActivity 
+    	if (mContactCount != db.getContactCount()) {
+    		updateAdapter();
+    		mContactCount = db.getContactCount();
+    	}
 		
 		super.onResume();
 	}
