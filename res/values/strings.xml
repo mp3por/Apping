@@ -4,9 +4,11 @@
     <string name="app_name">Apping</string>
     <string name="menu_advanced_search">Advanced search</string>
     <string name="button_share">SHARE</string>
+    <string name="button_delete">Delte this contact</string>
     <string name="button_camera">CAMERA</string>
     <string name="button_gallery">GALLERY</string>
     <string name="button_add">ADD</string>
     <string name="search_hint">Search ...</string>
+    
 
 </resources>

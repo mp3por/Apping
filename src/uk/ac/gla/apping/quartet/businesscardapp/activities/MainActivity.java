@@ -29,6 +29,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
+	public static final int RESULT_DELETE = 1;
+	public static final int RESULT_SAVE = 2;
 	
 	private ImageView mImageViewAdd;
 	private ImageView mImageViewSearch;
@@ -103,6 +105,24 @@ public class MainActivity extends Activity {
 	
     @Override
 	protected void onResume() {
+    	String text = "";
+    	int result = getIntent().getIntExtra("Action", -1);
+    	
+    	switch (result) {
+    		case RESULT_DELETE:
+    			text = "Deleted";
+    			break;
+    		case RESULT_SAVE:
+    			text = "Saved";
+    			break;
+    	}
+    	
+    	if (!text.equals("")) {
+	    	Toast toast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
+	    	toast.show();
+    	}
+    	
+    	
     	// update the adapter with contacts whenever the activity is brought to the front
     	// check contact count and update adapter only if contact count has changed
     	// provided that it is impossible to add one contact and delete another contact w/o opening MainActivity 

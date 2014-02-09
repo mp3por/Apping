@@ -59,25 +59,19 @@ public class ContactHelper {
 		} finally {
 			dbHelper.getWritableDatabase().endTransaction();
 		}
-		
-		Log.i("ContactHelper", "1");
 
 		Cursor cursor = dbHelper.getReadableDatabase().query(ContactsDbHelper.TABLE_CONTACTS,
 				ContactsDbHelper.allContactColumns, ContactsDbHelper.COLUMN_ID + " = " + insertId, null, null, null, null);
 		cursor.moveToFirst();
 		
-		Log.i("ContactHelper", "2");
-		
 		Cursor cursor2 = dbHelper.getReadableDatabase().query(ContactsDbHelper.TABLE_CONTACT_IMAGES,
 				ContactsDbHelper.allContactImageColumns, ContactsDbHelper.COLUMN_ID + " = " + insertId, null, null, null, null);
 		cursor2.moveToFirst();
 		
-		Log.i("ContactHelper", "3");
 		ContactWithImages contactWithImages = cursorToContactWithImages(cursor, cursor2);
 		cursor.close();
 		cursor2.close();
 		
-		Log.i("ContactHelper", "4");
 		return contactWithImages;
 	}
 
