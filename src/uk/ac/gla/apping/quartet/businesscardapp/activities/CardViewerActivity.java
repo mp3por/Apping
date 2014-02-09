@@ -1,5 +1,6 @@
 package uk.ac.gla.apping.quartet.businesscardapp.activities;
 
+import uk.ac.gla.apping.quartet.businesscardapp.data.Contact;
 import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
@@ -17,6 +18,7 @@ public class CardViewerActivity extends Activity {
 	private TextView mTextView;
 	private Button mButtonShare;
 	private Button mButtonDelete;
+	private Button mButtonSave;
 	ContactHelper db = ContactHelper.getInstance(this);
 	
 	@Override
@@ -52,25 +54,54 @@ public class CardViewerActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				
+				//build dialog reaction to button clicks
 				DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 				    @Override
 				    public void onClick(DialogInterface dialog, int button) {
-				        switch (button) {
-				        case DialogInterface.BUTTON_POSITIVE:
-				        	db.deleteContact(id);
-				        	Intent intent = new Intent(CardViewerActivity.this, MainActivity.class);
-				        	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				        	intent.putExtra("Action", MainActivity.RESULT_DELETE);
-				        	startActivity(intent);
-				            break;
-				        case DialogInterface.BUTTON_NEGATIVE:
-				            break;
+				        //decide what to do according to the button pressed
+				    	switch (button) {
+					        case DialogInterface.BUTTON_POSITIVE:
+					        	// delete contact
+					        	db.deleteContact(id);
+					        	
+					        	// close this activity (screen) and indicate, that delete was performed
+					        	Intent intent = new Intent(CardViewerActivity.this, MainActivity.class);
+					        	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					        	intent.putExtra("Action", MainActivity.RESULT_DELETE);
+					        	startActivity(intent);
+					            break;
+					        case DialogInterface.BUTTON_NEGATIVE:
+					            break;
 				        }
 				    }
 				};
 
 				AlertDialog.Builder builder = new AlertDialog.Builder(CardViewerActivity.this);
+				// define message and buttons
 				builder.setMessage("Delete contact with id: "+ id +"?").setPositiveButton("Yes", dialogClickListener).setNegativeButton("No", dialogClickListener).show();
+			}
+		});
+		
+		
+		mButtonSave = (Button) findViewById(R.id.buttonSave);
+		mButtonSave.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				Contact contact = new Contact();
+				// populate contact fields here
+				contact.setId(id);
+				// ...
+				
+				
+				// update contact in the database
+				//db.updateContact(contact);
+	        	
+				// close this activity (screen) and indicate, that save was performed
+				Intent intent = new Intent(CardViewerActivity.this, MainActivity.class);
+	        	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	        	intent.putExtra("Action", MainActivity.RESULT_SAVE);
+	        	startActivity(intent);
 			}
 		});
 		

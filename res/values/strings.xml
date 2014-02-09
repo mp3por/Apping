@@ -8,6 +8,7 @@
     <string name="button_camera">CAMERA</string>
     <string name="button_gallery">GALLERY</string>
     <string name="button_add">ADD</string>
+    <string name="button_save">Save changes</string>
     <string name="search_hint">Search ...</string>
     
 
