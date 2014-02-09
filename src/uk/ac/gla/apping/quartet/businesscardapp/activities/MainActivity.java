@@ -1,11 +1,22 @@
 package uk.ac.gla.apping.quartet.businesscardapp.activities;
 
+import java.util.ArrayList;
+import java.util.Random;
+
+import uk.ac.gla.apping.quartet.businesscardapp.data.Contact;
+import uk.ac.gla.apping.quartet.businesscardapp.data.ContactWithImages;
+import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
+import uk.ac.gla.apping.quatret.businesscardapp.adapters.ContactAdapter;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.SyncStateContract.Constants;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,6 +25,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -22,6 +34,11 @@ public class MainActivity extends Activity {
 	private ImageView mImageViewSearch;
 	private Button mButtonCard;
 	private EditText mEditTextSearch;
+	private ContactAdapter mContactAdapter;
+	private ListView mListViewContacts;
+	private ArrayList<Contact> mArrayListContacts;
+	private ContactHelper db = ContactHelper.getInstance(this);
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +56,8 @@ public class MainActivity extends Activity {
 			}
 
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				CharSequence text = "Search will be implemented later";
-	        	Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
-	        	toast.show();
+				mContactAdapter.filter(mArrayListContacts, mEditTextSearch.getText().toString());
+				mContactAdapter.notifyDataSetChanged();
 			}
 		});
 		
@@ -68,21 +84,41 @@ public class MainActivity extends Activity {
 			}
 		});
 		
-		mButtonCard = (Button) findViewById(R.id.buttonCard);
-		mButtonCard.setOnClickListener(new OnClickListener(){
-			
+		Button fuckingCrashMe = (Button) findViewById(R.id.buttonCrashMe);
+		fuckingCrashMe.setOnClickListener(new OnClickListener(){
+				
 			@Override
 			public void onClick(View arg0) {			
-				Intent intent = new Intent(MainActivity.this, CardViewerActivity.class);
-				intent.putExtra("id", 0); // passing the database id of the card to the CardViewerActivity activity
-				startActivity(intent);
-			}	
+				PopulateDatabase thread = new PopulateDatabase();
+				
+				thread.execute();
+				
+				
+			}
 		});
-		
+	}
+	
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mArrayListContacts.clear();
+		mArrayListContacts = null;
 	}
 
 	
+	// update the adapter with contacts whenever the activity is brought to the front
+	// TODO: may go for cleaner solution - check contact count and update adapter only if contact count has changed
+	// provided that it is impossible to add one contact and delete another contact w/o opening MainActivity inbetween 
     @Override
+	protected void onResume() {	
+    	updateAdapter();
+		
+		super.onResume();
+	}
+
+
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
     	MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main, menu);
@@ -105,4 +141,61 @@ public class MainActivity extends Activity {
 	}
 	
 	
+	private void updateAdapter() {
+		mArrayListContacts = (ArrayList<Contact>) db.getAllContacts();
+
+		mListViewContacts = (ListView) findViewById(R.id.listViewContacts);
+
+		mContactAdapter = new ContactAdapter(MainActivity.this, mArrayListContacts, "");
+		mContactAdapter.filter(mArrayListContacts, mEditTextSearch.getText().toString());
+
+		mListViewContacts.setAdapter(mContactAdapter);
+	}
+	
+	
+	
+	private class PopulateDatabase extends AsyncTask<String, Void, Boolean> {
+
+		private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute() {
+			this.dialog.setMessage("Please wait, duplicating contacts....");
+			this.dialog.show();
+		}
+
+		@Override
+		protected Boolean doInBackground(final String... args) {
+			ContactHelper db = ContactHelper.getInstance(getApplicationContext());
+			
+        	
+        	int copyCount = Integer.parseInt(((EditText) findViewById(R.id.editTextCopyCount)).getText().toString());
+        	for (int i = 0; i < copyCount; i++) {
+        		ContactWithImages contact = new ContactWithImages();
+    			contact.setName("Thissurname"+ (new Random().nextInt(1000)));
+    			contact.setEmail("test@test.com");
+    			contact.setCompany("RIP APPING");
+    			contact.setNumber("+44711111");
+    			contact.setThumbnail(db.getContactById(1).getThumbnail());
+    			
+    			
+        		db.createContact(contact);
+        	}
+			
+			
+			return true;
+		}
+
+		@Override
+		protected void onPostExecute(final Boolean success) {
+			if (dialog.isShowing()) {
+				dialog.dismiss();
+			}
+			
+			MainActivity.this.updateAdapter();
+		}
+	}
+
 }

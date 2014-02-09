@@ -3,20 +3,24 @@ package uk.ac.gla.apping.quartet.businesscardapp.activities;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
+
+import uk.ac.gla.apping.quartet.businesscardapp.data.ContactWithImages;
+import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
 
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
@@ -25,6 +29,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.style.SuperscriptSpan;
+
+import android.os.Bundle;
+import android.os.Environment;
+
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -222,6 +230,7 @@ public class ImporterActivity extends Activity {
 	private void cameraGalleryResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
 			Bitmap photo = (Bitmap) data.getExtras().get("data");
+
 			//Bitmap scaledBitmap = scaleBitmap(photo);
 			
 			//String pathToImage = mImageCaptureUri.getPath();
@@ -242,6 +251,14 @@ public class ImporterActivity extends Activity {
 		} else if (requestCode == GALLERY_REQUEST
 				&& resultCode == Activity.RESULT_OK) { // gallery returned
 			// picture
+		
+			
+			File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.jpg");
+			 mImage = (ImageView) findViewById(R.id.mImageViewCamera);
+			 mImage.setImageBitmap(photo);
+			// mImage.setImageBitmap(decodeSampledBitmapFromFile(file.getAbsolutePath(), 50, 50));
+		} else if (requestCode == GALLERY_REQUEST && resultCode == Activity.RESULT_OK) { // gallery returned picture
+
 			// Uri selectedImage = data.getData();
 			// Bitmap bitmap =
 			// MediaStore.Images.Media.getBitmap(this.getContentResolver(),

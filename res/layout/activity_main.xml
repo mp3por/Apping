@@ -31,16 +31,17 @@
             android:background="@drawable/image_search_bar"
             android:orientation="horizontal" >
 
+            <!-- can be possibly replaced by SearchView, if any of those features will be needed -->
+
             <EditText
                 android:id="@+id/editTextSearch"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
-                android:paddingLeft="15dp"
                 android:background="@null"
                 android:hint="@string/search_hint"
-                />
-            <!-- LATER next imageView can be replaced by android:drawableRight="@drawable/button_search"  -->
+                android:paddingLeft="15dp" />
+            <!-- LATER next imageView can be replaced by android:drawableRight="@drawable/button_search" -->
 
             <ImageView
                 android:id="@+id/imageViewSearch"
@@ -55,10 +56,32 @@
         </LinearLayout>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/buttonCard"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_card" />
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/editTextCopyCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number" 
+            android:text="200"   />
+
+        <Button
+            android:id="@+id/buttonCrashMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Duplicate contact with ID 1!" />
+        
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/listViewContacts"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:divider="#b5b5b5"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/item_list_activity_main" />
 
 </LinearLayout>
