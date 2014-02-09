@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
@@ -23,7 +24,7 @@ public class ContactAdapter extends BaseAdapter {
 	private static LayoutInflater inflater = null;
 
 	private Spanned highlightMatch(String text) {
-		return Html.fromHtml(text.replace(mMatch, "<b>" + mMatch + "</b>"));
+		return Html.fromHtml(text.replace(mMatch, "<b><font color=red>" + mMatch + "</font></b>"));
 	}
 	
     private Activity mActivity;
@@ -56,7 +57,6 @@ public class ContactAdapter extends BaseAdapter {
             vi = inflater.inflate(R.layout.list_activity_main, null);
         }
           
-        ImageView thumbnail = (ImageView) vi.findViewById(R.id.image);
         TextView name = (TextView) vi.findViewById(R.id.textViewContactName);
         TextView number = (TextView) vi.findViewById(R.id.textViewContactNumber);
         TextView email = (TextView) vi.findViewById(R.id.textViewContactEmail);
@@ -86,7 +86,8 @@ public class ContactAdapter extends BaseAdapter {
         } else {
         	email.setVisibility(View.GONE);
         }
-                
+          
+        ImageView thumbnail = (ImageView) vi.findViewById(R.id.imageViewLogo);
         thumbnail.setImageBitmap(BitmapFactory.decodeByteArray(contact.getThumbnail(), 0, contact.getThumbnail().length));
         thumbnail.setOnClickListener(new OnClickListener(){
 
@@ -96,6 +97,42 @@ public class ContactAdapter extends BaseAdapter {
 				intent.putExtra("id", contact.getId()); // passing the database id of the card to the CardViewerActivity activity
 				mActivity.startActivity(intent);
 			}});
+        
+        
+        
+        
+        ImageView actionCall = (ImageView) vi.findViewById(R.id.imageViewCall);
+        actionCall.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View arg0) {
+				Intent callIntent = new Intent(Intent.ACTION_CALL);          
+	            callIntent.setData(Uri.parse("tel:" + contact.getNumber()));          
+	            mActivity.startActivity(callIntent);
+			}
+		});
+        
+        ImageView actionSms = (ImageView) vi.findViewById(R.id.imageViewSms);
+        actionSms.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+				smsIntent.setType("vnd.android-dir/mms-sms");
+				smsIntent.putExtra("address", contact.getNumber());
+				mActivity.startActivity(smsIntent);
+			}
+        });
+        
+        ImageView actionEmail = (ImageView) vi.findViewById(R.id.imageViewEmail);
+        actionEmail.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View arg0) {
+				String[] recipients = new String[]{contact.getEmail(), ""};  
+				Intent emailIntent = new Intent(Intent.ACTION_SEND);  
+				emailIntent.setType("message/rfc822");      
+				emailIntent.putExtra(Intent.EXTRA_EMAIL, recipients);  
+				mActivity.startActivity(emailIntent);  
+			}
+		});
         
         return vi;
     }
