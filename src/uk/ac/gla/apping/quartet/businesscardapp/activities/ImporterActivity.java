@@ -240,7 +240,7 @@ public class ImporterActivity extends Activity {
 			
 			//png takes much more space then jpg
 			//photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
-			photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+			photo.compress(Bitmap.CompressFormat.JPEG, 70, stream);
 			byte[] byteThumbnail = stream.toByteArray();
 
 			ContactWithImages contact = new ContactWithImages();
