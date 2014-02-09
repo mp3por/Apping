@@ -72,7 +72,7 @@ public class ImporterActivity extends Activity {
 				startCameraActivity();
 
 				// Nikis code
-				//NikiStartCamera();
+				NikiStartCamera();
 
 			}
 
