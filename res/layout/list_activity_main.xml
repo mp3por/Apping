@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
 
     <ImageView
         android:id="@+id/image"
@@ -9,8 +10,9 @@
         android:layout_height="wrap_content" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:orientation="vertical" >
 
         <TextView
@@ -19,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"
             android:layout_marginLeft="10dip"
-            android:layout_weight="1" />
+            />
 
         <TextView
             android:id="@+id/textViewContactNumber"
@@ -27,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"
             android:layout_marginLeft="10dip"
-            android:layout_weight="1"
+            
             android:visibility="gone" />
 
         <TextView
@@ -36,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"
             android:layout_marginLeft="10dip"
-            android:layout_weight="1"
+            
             android:visibility="gone" />
 
         <TextView
@@ -45,9 +47,26 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"
             android:layout_marginLeft="10dip"
-            android:layout_weight="1"
+            
             android:visibility="gone" />
     </LinearLayout>
-    
+
+    <ImageView
+        android:id="@+id/imageViewCall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/call" />
+
+    <ImageView
+        android:id="@+id/imageViewSms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/sms" />
+
+    <ImageView
+        android:id="@+id/imageViewEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/email" />
 
 </LinearLayout>

@@ -180,7 +180,6 @@ public class MainActivity extends Activity {
     			contact.setNumber("+44711111");
     			contact.setThumbnail(db.getContactById(1).getThumbnail());
     			
-    			
         		db.createContact(contact);
         	}
 			
