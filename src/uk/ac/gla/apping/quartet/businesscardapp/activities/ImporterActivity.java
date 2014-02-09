@@ -3,6 +3,7 @@ package uk.ac.gla.apping.quartet.businesscardapp.activities;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,17 +11,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
-import com.googlecode.tesseract.android.TessBaseAPI;
-
 import uk.ac.gla.apping.quartet.businesscardapp.data.ContactWithImages;
 import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
-
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
@@ -29,15 +26,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.style.SuperscriptSpan;
-
-import android.os.Bundle;
-import android.os.Environment;
-
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+
+/*
+import com.googlecode.tesseract.android.TessBaseAPI;
+*/
 
 public class ImporterActivity extends Activity {
 	private static final int CAMERA_REQUEST = 1888;
@@ -63,7 +60,7 @@ public class ImporterActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_importer);
-		
+
 		mImage = (ImageView) findViewById(R.id.mImageViewCamera);
 		mButtonCamera = (Button) findViewById(R.id.buttonCamera);
 		mButtonCamera.setOnClickListener(new OnClickListener() {
@@ -106,7 +103,7 @@ public class ImporterActivity extends Activity {
 
 	protected File NikiSavePic() {
 		File photo = null;
-		
+
 		try {
 			photo = createImageFile();
 		} catch (IOException e) {
@@ -142,12 +139,12 @@ public class ImporterActivity extends Activity {
 		// add check condition for security
 		if (cameraIntent.resolveActivity(getPackageManager()) != null) {
 			// create the file where the photo should go
-			
+
 			// uncomment for saving in the phone memory
 			//if(NikiSavePic() != null){
 			//	cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(NikiSavePic()));
 			//}
-			
+
 		//	cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri); ?!??!?!?!?
 			startActivityForResult(cameraIntent, CAMERA_REQUEST);
 		}
@@ -204,8 +201,8 @@ public class ImporterActivity extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
-		
+
+
 		String ocrText;
 		// OCR
 		if (resultCode == -1) {
@@ -217,7 +214,7 @@ public class ImporterActivity extends Activity {
 
 		// save in the db here
 
-		
+
 		// Intent intent = new Intent(ImporterActivity.this,
 		// CardViewerActivity.class);
 		// intent.putExtra("id", 0); // passing the database id of the card to
@@ -231,34 +228,57 @@ public class ImporterActivity extends Activity {
 		if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
 			Bitmap photo = (Bitmap) data.getExtras().get("data");
 
+			
+			
+//------------------------- TMP CODE FOR TESTING -------------------------\\
+			
+			// aspect ratio? never heard of it... 
+			photo = Bitmap.createScaledBitmap(photo, 200, 200, true);
+
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			
+			
+			//png takes much more space then jpg
+			//photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+			photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+			byte[] byteThumbnail = stream.toByteArray();
+
+			ContactWithImages contact = new ContactWithImages();
+			contact.setName("Thissurname"+ (new Random().nextInt(1000)));
+			contact.setEmail("test@test.com");
+			contact.setCompany("RIP APPING");
+			contact.setNumber("+44711111");
+			contact.setThumbnail(byteThumbnail);
+			ContactHelper db = ContactHelper.getInstance(this);
+			db.createContact(contact);
+			
+//------------------------- END [TMP CODE FOR TESTING] -------------------------\\			
+
+			
+			
+			
+			
+			
 			//Bitmap scaledBitmap = scaleBitmap(photo);
-			
+
 			//String pathToImage = mImageCaptureUri.getPath();
-			
+
 			//scaling
 			int targetW = 480;
 			int targetH = 320;
 			//Bitmap b = decodeSampledBitmap(pathToImage, targetW, targetH);
-			
+
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			photo.compress(Bitmap.CompressFormat.JPEG, 70, out);
 			Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
-			
+
 			Log.e("Original   dimensions", photo.getRowBytes()*photo.getHeight() + " ");
 			Log.e("Compressed dimensions", decoded.getRowBytes()*decoded.getHeight()+" ");
-		    
+
 			mImage.setImageBitmap(decoded);
 		} else if (requestCode == GALLERY_REQUEST
 				&& resultCode == Activity.RESULT_OK) { // gallery returned
 			// picture
-		
-			
-			File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.jpg");
-			 mImage = (ImageView) findViewById(R.id.mImageViewCamera);
-			 mImage.setImageBitmap(photo);
-			// mImage.setImageBitmap(decodeSampledBitmapFromFile(file.getAbsolutePath(), 50, 50));
-		} else if (requestCode == GALLERY_REQUEST && resultCode == Activity.RESULT_OK) { // gallery returned picture
-
 			// Uri selectedImage = data.getData();
 			// Bitmap bitmap =
 			// MediaStore.Images.Media.getBitmap(this.getContentResolver(),
@@ -267,7 +287,7 @@ public class ImporterActivity extends Activity {
 			// fail
 		}
 	}
-	
+
 	//scaling the bitmap (BAD QUALITY)
 	private Bitmap scaleBitmap(Bitmap photo){
 		final int maxSize = 960;
@@ -286,7 +306,7 @@ public class ImporterActivity extends Activity {
 		Bitmap resizedBitmap = Bitmap.createScaledBitmap(photo, outWidth, outHeight, false);
 		return resizedBitmap;
 	}
-	
+
 	// calculating the sample size
 	public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
 		// Raw height and width of image
@@ -309,7 +329,7 @@ public class ImporterActivity extends Activity {
 
 		return inSampleSize;
 	}
-	
+
 	//doesnt Work for now
 	public static Bitmap decodeSampledBitmap(String path, int reqWidth, int reqHeight){
 		// First decode with inJustDecodeBounds=true to check dimensions
@@ -321,13 +341,13 @@ public class ImporterActivity extends Activity {
 	    // Decode bitmap with inSampleSize set
 	    options.inJustDecodeBounds = false;
 	    return BitmapFactory.decodeFile(path, options);
-	    
+
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	protected String onPhotoTaken() {
 		_taken = true;
 
@@ -381,30 +401,36 @@ public class ImporterActivity extends Activity {
 		}
 
 		// _image.setImageBitmap( bitmap );
-		
+
 		Log.v(TAG, "Before baseApi");
 
+		/*
+		
 		TessBaseAPI baseApi = new TessBaseAPI();
 		baseApi.setDebug(true);
 		baseApi.init(DATA_PATH, lang);
 		baseApi.setImage(bitmap);
-		
+
 		String recognizedText = baseApi.getUTF8Text();
-		
+
 		baseApi.end();
 
 		// You now have the text in recognizedText var, you can do anything with it.
 		// We will display a stripped out trimmed alpha-numeric version of it (if lang is eng)
 		// so that garbage doesn't make it to the display.
 
-		
+
 		if ( lang.equalsIgnoreCase("eng") ) {
 			recognizedText = recognizedText.replaceAll("[^a-zA-Z0-9]+", " ");
 		}
-		
+
 		recognizedText = recognizedText.trim();
 		return recognizedText;
+		
+		*/
+		
+		return "tmp test";
 		// Cycle done.
 	}
-	
+
 }
