@@ -13,10 +13,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.SyncStateContract.Constants;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,7 +32,6 @@ public class MainActivity extends Activity {
 	
 	private ImageView mImageViewAdd;
 	private ImageView mImageViewSearch;
-	private Button mButtonCard;
 	private EditText mEditTextSearch;
 	private ContactAdapter mContactAdapter;
 	private ListView mListViewContacts;
@@ -107,14 +104,17 @@ public class MainActivity extends Activity {
 	protected void onResume() {
     	String text = "";
     	int result = getIntent().getIntExtra("Action", -1);
+    	getIntent().removeExtra("Action");
     	
     	switch (result) {
-    		case RESULT_DELETE:
+    		case MainActivity.RESULT_DELETE:
     			text = "Deleted";
     			break;
-    		case RESULT_SAVE:
+    		case MainActivity.RESULT_SAVE:
     			text = "Saved";
     			break;
+			default:
+				break;
     	}
     	
     	if (!text.equals("")) {
