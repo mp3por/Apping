@@ -12,6 +12,8 @@ import uk.ac.gla.apping.quartet.businesscardapp.data.ContactWithImages;
 import uk.ac.gla.apping.quartet.businesscardapp.activities.OCR;
 import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
+import CustomExceptions.OCRCreateDirError;
+import CustomExceptions.OCRTestdataMissingFiles;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -52,15 +54,15 @@ public class ImporterActivity extends Activity {
 	private Uri mImageCaptureUri;
 	public String recogString;
 	public Bitmap bm;
-	
+
 	public String getPath() {
 		return _path;
-	} 
-	
+	}
+
 	public void setBitmap(Bitmap bitmap) {
 		bm = bitmap;
 	}
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -100,14 +102,9 @@ public class ImporterActivity extends Activity {
 		});
 	}
 
-
 	protected void startCameraActivity() {
-
-		// ocr = new OCR();
-		// ocr.setPath(_path,getAssets());
 		Log.i("startCameraActivity path", _path);
 		File file = new File(_path);
-
 		Uri outputFileUri = Uri.fromFile(file);
 
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -175,13 +172,13 @@ public class ImporterActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.i("requestCode ", Integer.toString(requestCode));
-		Log.i("resultCode ", Boolean.toString(resultCode==RESULT_OK));
+		Log.i("resultCode ", Boolean.toString(resultCode == RESULT_OK));
 
 		if (resultCode == RESULT_OK) {
-			if (requestCode == CAMERA_REQUEST) {	
-				
+			if (requestCode == CAMERA_REQUEST) {
+
 			} else if (requestCode == GALLERY_REQUEST) { // gallery returned
-				//TODO: change Uri path if it is from galary.
+				// TODO: change Uri path if it is from galary.
 				// picture
 				// Uri selectedImage = data.getData();
 				// Bitmap bitmap =
@@ -190,12 +187,13 @@ public class ImporterActivity extends Activity {
 			} else {
 				// fail
 			}
-			
+
 			Log.i("starting OCRTask :", "OK");
+			this.bm = (Bitmap) data.getExtras().get("data");
 			OCRTask task = new OCRTask();
 			task.execute();
 		}
-		
+
 		// save in the db here
 		/*
 		 * Intent intent = new Intent(ImporterActivity.this,
@@ -207,42 +205,42 @@ public class ImporterActivity extends Activity {
 	}
 
 	private void afterOCR() {
-			Bitmap photo = bm;
+		Bitmap photo = bm;
 
-			// ------------------------- TMP CODE FOR TESTING
-			// -------------------------\\
+		// ------------------------- TMP CODE FOR TESTING
+		// -------------------------\\
 
-			// aspect ratio? never heard of it...
-			photo = Bitmap.createScaledBitmap(photo, 200, 200, true);
+		// aspect ratio? never heard of it...
+		photo = Bitmap.createScaledBitmap(photo, 200, 200, true);
 
-			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-			// png takes much more space then jpg
-			// photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
-			photo.compress(Bitmap.CompressFormat.JPEG, 70, stream);
-			byte[] byteThumbnail = stream.toByteArray();
+		// png takes much more space then jpg
+		// photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+		photo.compress(Bitmap.CompressFormat.JPEG, 70, stream);
+		byte[] byteThumbnail = stream.toByteArray();
 
-			// add to image view
-			Bitmap decoded = BitmapFactory
-					.decodeStream(new ByteArrayInputStream(stream.toByteArray()));
-			mImage.setImageBitmap(decoded);
+		// add to image view
+		Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(
+				stream.toByteArray()));
+		mImage.setImageBitmap(decoded);
 
-			ContactWithImages contact = new ContactWithImages();
-			contact.setName("Thissurname" + (new Random().nextInt(1000)));
-			contact.setEmail("test@test.com");
-			contact.setCompany("RIP APPING");
-			contact.setNumber("+44711111");
-			contact.setThumbnail(byteThumbnail);
-			ContactHelper db = ContactHelper.getInstance(this);
-			db.createContact(contact);
+		ContactWithImages contact = new ContactWithImages();
+		contact.setName("Thissurname" + (new Random().nextInt(1000)));
+		contact.setEmail("test@test.com");
+		contact.setCompany("RIP APPING");
+		contact.setNumber("+44711111");
+		contact.setThumbnail(byteThumbnail);
+		ContactHelper db = ContactHelper.getInstance(this);
+		db.createContact(contact);
 
-			// ------------------------- END [TMP CODE FOR TESTING]
-			// -------------------------\\
+		// ------------------------- END [TMP CODE FOR TESTING]
+		// -------------------------\\
 
-			Log.e("Original   dimensions",
-					photo.getRowBytes() * photo.getHeight() + " ");
-			Log.e("Compressed dimensions",
-					decoded.getRowBytes() * decoded.getHeight() + " ");
+		Log.e("Original   dimensions", photo.getRowBytes() * photo.getHeight()
+				+ " ");
+		Log.e("Compressed dimensions",
+				decoded.getRowBytes() * decoded.getHeight() + " ");
 	}
 
 	private class OCRTask extends AsyncTask<String, Void, Boolean> {
@@ -262,11 +260,26 @@ public class ImporterActivity extends Activity {
 			Log.i("ImporterActivity", "async Pth: "
 					+ ImporterActivity.this._path);
 			OCR ocr = new OCR(ImporterActivity.this, getAssets());
-			ocr.run();
-			ImporterActivity.this.recogString = ocr.getRecognizedText();
-			ImporterActivity.this.bm = ocr.getBitmap();
-			Log.i("recognizedText", recogString);
-			Log.i("Image ?", bm.toString());
+			try {
+				ocr.run();
+				ImporterActivity.this.recogString = ocr.getRecognizedText();
+				ImporterActivity.this.bm = ocr.getBitmap();
+				Log.i("recognizedText", recogString);
+				Log.i("Image ?", bm.toString());
+			} catch (OCRTestdataMissingFiles e) {
+
+				e.printStackTrace();
+				ImporterActivity.this.recogString = null;
+			} catch (OCRCreateDirError e) {
+
+				e.printStackTrace();
+				ImporterActivity.this.recogString = null;
+			} catch (IOException e) {
+
+				e.printStackTrace();
+				ImporterActivity.this.recogString = null;
+			}
+
 			ocr = null;
 			return true;
 		}
@@ -277,7 +290,7 @@ public class ImporterActivity extends Activity {
 			if (dialog.isShowing()) {
 				dialog.dismiss();
 			}
-			
+
 			ImporterActivity.this.afterOCR();
 		}
 	}

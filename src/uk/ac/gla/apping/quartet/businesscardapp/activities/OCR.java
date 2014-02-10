@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import CustomExceptions.OCRCreateDirError;
+import CustomExceptions.OCRTestdataMissingFiles;
 import android.app.Activity;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -18,34 +20,24 @@ import android.util.Log;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 public class OCR {
+	//Path settings
 	public static final String DATA_PATH = Environment.getExternalStorageDirectory().toString() + "/BusinessCard/";
-	// You should have the trained data file in assets folder
-	// You can get them at:
-	// http://code.google.com/p/tesseract-ocr/downloads/list
 	public static final String lang = "eng";
 	private static final String TAG = "BusinessCard.java";
-
 	protected String _path = DATA_PATH + "/ocr.jpg";
+	
+	//Booleans
 	protected boolean _taken;
-
+	protected static final String PHOTO_TAKEN = "photo_taken";
+	private boolean pathSet = false;
+	
+	//Fields
+	private AssetManager assetManager;
+	private ImporterActivity mActivity;
 	private String recognizedText;
 	private Bitmap bitmap;
 
-	private boolean pathSet = false;
-	private AssetManager assetManager;
-
-	private ImporterActivity mActivity;
-	
-	protected static final String PHOTO_TAKEN = "photo_taken";
-
-	private static OCR instance;
-
-	/*public static OCR getInstance() {
-		if (instance == null) {
-			instance = new OCR();
-		}
-		return instance;
-	}*/
+	//Constructors
 	public OCR(ImporterActivity activity, AssetManager assetManager) {
 		// TODO Auto-generated constructor stub
 		mActivity = activity;
@@ -53,25 +45,20 @@ public class OCR {
 		this.assetManager = assetManager;
 	}
 	
-
-	public void run() {
-		System.out.println("OCR RUN");
+	//Main run method - this has to be called after the 
+	public void run() throws OCRTestdataMissingFiles, OCRCreateDirError, IOException {
 		setPath(_path, assetManager);
-		System.out.println("PATH SET");
 		if (pathSet == false) {
-			System.out.println("path was not set");
 			Log.e(TAG, "Path was not set");
 			return ;
 		}
-		System.out.println("Path OK");
 		_taken = true;
 
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inSampleSize = 4;
-		System.out.print("making bitmap");
 		bitmap = BitmapFactory.decodeFile(_path, options);
 
-		try {
+		//try {
 			ExifInterface exif = new ExifInterface(_path);
 			int exifOrientation = exif.getAttributeInt(
 					ExifInterface.TAG_ORIENTATION,
@@ -96,13 +83,10 @@ public class OCR {
 			Log.v(TAG, "Rotation: " + rotate);
 
 			if (rotate != 0) {
-
 				// Getting width & height of the given image.
 				int w = bitmap.getWidth();
 				int h = bitmap.getHeight();
 				
-				
-
 				// Setting pre rotate
 				Matrix mtx = new Matrix();
 				mtx.preRotate(rotate);
@@ -114,9 +98,9 @@ public class OCR {
 			// Convert to ARGB_8888, required by tess
 			bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
 
-		} catch (IOException e) {
+		/*} catch (IOException e) {
 			Log.e(TAG, "Couldn't correct orientation: " + e.toString());
-		}
+		}*/
 
 		// _image.setImageBitmap( bitmap );
 
@@ -125,13 +109,6 @@ public class OCR {
 		//TODO: change bitmap brithness, but return the original
 
 		recognizedText = runTess(bitmap);
-
-		// You now have the text in recognizedText var, you can do anything with
-		// it.
-		// We will display a stripped out trimmed alpha-numeric version of it
-		// (if lang is eng)
-		// so that garbage doesn't make it to the display.
-
 		Log.v(TAG, "OCRED TEXT: " + recognizedText);
 
 		if (lang.equalsIgnoreCase("eng")) {
@@ -143,13 +120,13 @@ public class OCR {
 		// Cycle done.
 	}
 	
-
+	//Getter for the recognized text
 	public String getRecognizedText() {
 		return recognizedText;
 	}
-
+	
+	//Calling the Tess API
 	private String runTess(Bitmap bitmap) {
-		System.out.println("Main tess");
 		// TODO Auto-generated method stub
 		TessBaseAPI baseApi = new TessBaseAPI();
 		baseApi.setDebug(true);
@@ -168,19 +145,17 @@ public class OCR {
 		return bitmap;
 	}
 
-
-	private void setPath(String _path,AssetManager assetManager) {
-		System.out.println("Setting path");
+	//sets the pats and checks for the needed files
+	private void setPath(String _path,AssetManager assetManager) throws OCRTestdataMissingFiles,OCRCreateDirError{
 		pathSet = true;
 		String[] paths = new String[] { DATA_PATH, DATA_PATH + "tessdata/" };
-
 		for (String path : paths) {
 			File dir = new File(path);
 			if (!dir.exists()) {
 				if (!dir.mkdirs()) {
 					Log.v(TAG, "ERROR: Creation of directory " + path
 							+ " on sdcard failed");
-					return;
+					throw new OCRCreateDirError();
 				} else {
 					Log.v(TAG, "Created directory " + path + " on sdcard");
 				}
@@ -188,7 +163,7 @@ public class OCR {
 
 		}
 		
-		
+		// this is to check if the training data is available since the TessApi can not work without them
 		if (!(new File(DATA_PATH + "tessdata/" + lang + ".traineddata")).exists()) {
 			try {
 
@@ -214,8 +189,11 @@ public class OCR {
 				Log.v(TAG, "Copied " + lang + " traineddata");
 			} catch (IOException e) {
 				Log.e(TAG, "Was unable to copy " + lang + " traineddata " + e.toString());
+				throw new OCRTestdataMissingFiles();
+				
 			}
 		}
+		pathSet = true;
 		this._path = _path;
 	}
 
