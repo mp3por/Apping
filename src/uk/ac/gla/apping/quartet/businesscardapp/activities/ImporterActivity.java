@@ -3,30 +3,25 @@ package uk.ac.gla.apping.quartet.businesscardapp.activities;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
-
 import uk.ac.gla.apping.quartet.businesscardapp.data.ContactWithImages;
+import uk.ac.gla.apping.quartet.businesscardapp.activities.OCR;
 import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.text.style.SuperscriptSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,8 +29,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 /*
-import com.googlecode.tesseract.android.TessBaseAPI;
-*/
+ import com.googlecode.tesseract.android.TessBaseAPI;
+ */
 
 public class ImporterActivity extends Activity {
 	private static final int CAMERA_REQUEST = 1888;
@@ -43,23 +38,27 @@ public class ImporterActivity extends Activity {
 
 	// OCR Variables
 	public static final String DATA_PATH = Environment
-			.getExternalStorageDirectory().toString() + "/SimpleAndroidOCR/";
-	//public static final String lang = "eng";
+			.getExternalStorageDirectory().toString() + "/BusinessCard/";
+	// public static final String lang = "eng";
 	protected static final String PHOTO_TAKEN = "photo_taken";
 	private static final String TAG = "BisinessCardApp.java";
-	protected String _path =  DATA_PATH + "/ocr.jpg";
+	protected String _path = DATA_PATH + "ocr.jpg";
 	protected boolean _taken;
-	//OCR ocr;
+	// OCR ocr;
 
 	private Button mButtonCamera;
 	private Button mButtonGallery;
 	private ImageView mImage;
 	private Uri mImageCaptureUri;
+	public String recogString;
+	public Bitmap bm;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+
+		Log.i("ImporterActivity", "oncreate Pth: " + _path);
 
 		setContentView(R.layout.activity_importer);
 
@@ -70,10 +69,11 @@ public class ImporterActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// OCR save test
-			    startCameraActivity();
+				startCameraActivity();
+				// startOCRActivity();
 
 				// Nikis code
-				NikiStartCamera();
+				// NikiStartCamera();
 
 			}
 
@@ -92,26 +92,26 @@ public class ImporterActivity extends Activity {
 		});
 	}
 
+
 	protected void startCameraActivity() {
-		
-		//ocr = new OCR();
-		//ocr.setPath(_path,getAssets());
-		
-		
+
+		// ocr = new OCR();
+		// ocr.setPath(_path,getAssets());
+		Log.i("startCameraActivity path", _path);
 		File file = new File(_path);
-		
+
 		Uri outputFileUri = Uri.fromFile(file);
 
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		
+
 		System.out.println("Intent made = true");
-		if (intent.resolveActivity(getPackageManager()) != null){
+		if (intent.resolveActivity(getPackageManager()) != null) {
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
 			System.out.println("StartActivityForResult");
-			startActivityForResult(intent, 0);
+			startActivityForResult(intent, 1234);
 
 		}
-		
+
 	}
 
 	protected void NikiStartCamera() {
@@ -121,17 +121,19 @@ public class ImporterActivity extends Activity {
 		// add check condition for security
 		if (cameraIntent.resolveActivity(getPackageManager()) != null) {
 			// create the file where the photo should go
-			
+
 			// uncomment for saving in the phone memory
-			//if(NikiSavePic() != null){
-			//	cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(NikiSavePic()));
-			//}
-			
-			//	cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri); ?!??!?!?!?
+			// if(NikiSavePic() != null){
+			// cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+			// Uri.fromFile(NikiSavePic()));
+			// }
+
+			// cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,
+			// mImageCaptureUri); ?!??!?!?!?
 			startActivityForResult(cameraIntent, CAMERA_REQUEST);
 		}
 	}
-	
+
 	protected File NikiSavePic() {
 		File photo = null;
 		try {
@@ -162,69 +164,85 @@ public class ImporterActivity extends Activity {
 		return image;
 	}
 
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+		Log.i("requestCode ", Integer.toString(requestCode));
+		Log.i("resultCode ", Boolean.toString(resultCode==RESULT_OK));
 		String ocrText;
-		// OCR
-		if (resultCode == -1) {
-			System.out.println("Activity return -1");
-			cameraGalleryResult(requestCode, resultCode, data);
-			//ocrText = ocr.run();
-			//System.out.println("OCRText: "+ocrText);
-		} else {
-			Log.v(TAG, "User cancelled");
+		if (requestCode == 123) {
+			if (resultCode == RESULT_OK) {
+				Bundle basket = data.getExtras();
+				ocrText = basket.getString("recognizedText");
+			}
+		}
+		if (requestCode == 1234) {
+			if (resultCode == RESULT_OK) {
+				Log.i("starting OCRTask :", "OK");
+				OCRTask task = new OCRTask();
+				task.execute();
+			}
+		}
+		if (requestCode == CAMERA_REQUEST) {
+			if (resultCode == -1) {
+				System.out.println("Activity return -1");
+				// cameraGalleryResult(requestCode, resultCode, data);
+				// ocrText = ocr.run();
+				// System.out.println("OCRText: "+ocrText);
+			} else {
+				Log.v(TAG, "User cancelled");
+			}
 		}
 
 		// save in the db here
 
-
-		/*Intent intent = new Intent(ImporterActivity.this,
-		CardViewerActivity.class);
-		intent.putExtra("id", 0); // passing the database id of the card to the CardViewerActivity activity
-		startActivity(intent);
-		finish(); // this activity must be terminated, so that user can't use back button to return to it
-		*/
+		/*
+		 * Intent intent = new Intent(ImporterActivity.this,
+		 * CardViewerActivity.class); intent.putExtra("id", 0); // passing the
+		 * database id of the card to the CardViewerActivity activity
+		 * startActivity(intent); finish(); // this activity must be terminated,
+		 * so that user can't use back button to return to it
+		 */
 	}
 
-	private void cameraGalleryResult(int requestCode, int resultCode, Intent data) {
+	private void cameraGalleryResult(int requestCode, int resultCode,
+			Intent data) {
 		if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
 			Bitmap photo = (Bitmap) data.getExtras().get("data");
 
-			
-			
-//------------------------- TMP CODE FOR TESTING -------------------------\\
-			
-			// aspect ratio? never heard of it... 
+			// ------------------------- TMP CODE FOR TESTING
+			// -------------------------\\
+
+			// aspect ratio? never heard of it...
 			photo = Bitmap.createScaledBitmap(photo, 200, 200, true);
 
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
-			
-			
-			//png takes much more space then jpg
-			//photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+
+			// png takes much more space then jpg
+			// photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
 			photo.compress(Bitmap.CompressFormat.JPEG, 70, stream);
 			byte[] byteThumbnail = stream.toByteArray();
-			
-			//add to image view
-			Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(stream.toByteArray()));
+
+			// add to image view
+			Bitmap decoded = BitmapFactory
+					.decodeStream(new ByteArrayInputStream(stream.toByteArray()));
 			mImage.setImageBitmap(decoded);
 
 			ContactWithImages contact = new ContactWithImages();
-			contact.setName("Thissurname"+ (new Random().nextInt(1000)));
+			contact.setName("Thissurname" + (new Random().nextInt(1000)));
 			contact.setEmail("test@test.com");
 			contact.setCompany("RIP APPING");
 			contact.setNumber("+44711111");
 			contact.setThumbnail(byteThumbnail);
 			ContactHelper db = ContactHelper.getInstance(this);
 			db.createContact(contact);
-			
-//------------------------- END [TMP CODE FOR TESTING] -------------------------\\			
 
+			// ------------------------- END [TMP CODE FOR TESTING]
+			// -------------------------\\
 
-			Log.e("Original   dimensions", photo.getRowBytes()*photo.getHeight() + " ");
-			Log.e("Compressed dimensions", decoded.getRowBytes()*decoded.getHeight()+" ");
+			Log.e("Original   dimensions",
+					photo.getRowBytes() * photo.getHeight() + " ");
+			Log.e("Compressed dimensions",
+					decoded.getRowBytes() * decoded.getHeight() + " ");
 
 		} else if (requestCode == GALLERY_REQUEST
 				&& resultCode == Activity.RESULT_OK) { // gallery returned
@@ -238,4 +256,40 @@ public class ImporterActivity extends Activity {
 		}
 	}
 
+	private class OCRTask extends AsyncTask<String, Void, Boolean> {
+		private ProgressDialog dialog = new ProgressDialog(
+				ImporterActivity.this);
+
+		/** progress dialog to show user that the backup is processing. */
+		/** application context. */
+		@Override
+		protected void onPreExecute() {
+			this.dialog.setMessage("Analysing ....");
+			this.dialog.show();
+		}
+
+		@Override
+		protected Boolean doInBackground(final String... args) {
+			Log.i("ImporterActivity", "async Pth: "
+					+ ImporterActivity.this._path);
+			OCR ocr = new OCR(ImporterActivity.this._path, getAssets());
+			ocr.run();
+			ImporterActivity.this.recogString = ocr.getRecognizedText();
+			ImporterActivity.this.bm = ocr.getBitmap();
+			Log.i("recognizedText", recogString);
+			Log.i("Image ?", bm.toString());
+			ocr = null;
+			return true;
+		}
+
+		@Override
+		protected void onPostExecute(final Boolean success) {
+			mImage.setImageBitmap(bm);
+			if (dialog.isShowing()) {
+				dialog.dismiss();
+			}
+			
+
+		}
+	}
 }
