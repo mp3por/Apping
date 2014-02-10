@@ -70,10 +70,10 @@ public class ImporterActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// OCR save test
-				 startCameraActivity();
+			    startCameraActivity();
 
 				// Nikis code
-				// NikiStartCamera();
+				NikiStartCamera();
 
 			}
 
@@ -166,12 +166,11 @@ public class ImporterActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-
 		String ocrText;
 		// OCR
 		if (resultCode == -1) {
 			System.out.println("Activity return -1");
-			//cameraGalleryResult(requestCode, resultCode, data);
+			cameraGalleryResult(requestCode, resultCode, data);
 			ocrText = ocr.run();
 			System.out.println("OCRText: "+ocrText);
 		} else {
@@ -181,13 +180,12 @@ public class ImporterActivity extends Activity {
 		// save in the db here
 
 
-		// Intent intent = new Intent(ImporterActivity.this,
-		// CardViewerActivity.class);
-		// intent.putExtra("id", 0); // passing the database id of the card to
-		// the CardViewerActivity activity
-		// startActivity(intent);
-		// finish(); // this activity must be terminated, so that user can't use
-		// back button to return to it
+		/*Intent intent = new Intent(ImporterActivity.this,
+		CardViewerActivity.class);
+		intent.putExtra("id", 0); // passing the database id of the card to the CardViewerActivity activity
+		startActivity(intent);
+		finish(); // this activity must be terminated, so that user can't use back button to return to it
+		*/
 	}
 
 	private void cameraGalleryResult(int requestCode, int resultCode, Intent data) {
@@ -224,26 +222,10 @@ public class ImporterActivity extends Activity {
 			
 //------------------------- END [TMP CODE FOR TESTING] -------------------------\\			
 
-			
-			
-			
-			
-			
-			//Bitmap scaledBitmap = scaleBitmap(photo);
-
-			//String pathToImage = mImageCaptureUri.getPath();
-
-		
-			//Bitmap b = decodeSampledBitmap(pathToImage, targetW, targetH);
-
-			//ByteArrayOutputStream out = new ByteArrayOutputStream();
-			//photo.compress(Bitmap.CompressFormat.JPEG, 70, out);
-			//Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
 
 			Log.e("Original   dimensions", photo.getRowBytes()*photo.getHeight() + " ");
 			Log.e("Compressed dimensions", decoded.getRowBytes()*decoded.getHeight()+" ");
 
-			//mImage.setImageBitmap(decoded);
 		} else if (requestCode == GALLERY_REQUEST
 				&& resultCode == Activity.RESULT_OK) { // gallery returned
 			// picture
@@ -254,62 +236,6 @@ public class ImporterActivity extends Activity {
 		} else {
 			// fail
 		}
-	}
-
-	//scaling the bitmap (BAD QUALITY)
-	private Bitmap scaleBitmap(Bitmap photo){
-		final int maxSize = 960;
-		int outWidth;
-		int outHeight;
-		int inWidth = photo.getWidth();
-		int inHeight = photo.getHeight();
-		if(inWidth > inHeight){
-		    outWidth = maxSize;
-		    outHeight = (inHeight * maxSize) / inWidth; 
-		} else {
-		    outHeight = maxSize;
-		    outWidth = (inWidth * maxSize) / inHeight; 
-		}
-
-		Bitmap resizedBitmap = Bitmap.createScaledBitmap(photo, outWidth, outHeight, false);
-		return resizedBitmap;
-	}
-
-	// calculating the sample size
-	public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-		// Raw height and width of image
-		final int height = options.outHeight;
-		final int width = options.outWidth;
-		int inSampleSize = 1;
-
-		if (height > reqHeight || width > reqWidth) {
-
-			final int halfHeight = height / 2;
-			final int halfWidth = width / 2;
-
-			// Calculate the largest inSampleSize value that is a power of 2 and keeps both
-			// height and width larger than the requested height and width.
-			while ((halfHeight / inSampleSize) > reqHeight
-					&& (halfWidth / inSampleSize) > reqWidth) {
-				inSampleSize *= 2;
-			}
-		}
-
-		return inSampleSize;
-	}
-
-	//doesnt Work for now
-	public static Bitmap decodeSampledBitmap(String path, int reqWidth, int reqHeight){
-		// First decode with inJustDecodeBounds=true to check dimensions
-	    final BitmapFactory.Options options = new BitmapFactory.Options();
-	    options.inJustDecodeBounds = true;
-	    BitmapFactory.decodeFile(path, options);
-	    // Calculate inSampleSize
-	    options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-	    // Decode bitmap with inSampleSize set
-	    options.inJustDecodeBounds = false;
-	    return BitmapFactory.decodeFile(path, options);
-
 	}
 
 }
