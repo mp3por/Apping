@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
-import com.googlecode.tesseract.android.TessBaseAPI;
 
 import uk.ac.gla.apping.quartet.businesscardapp.data.ContactWithImages;
 import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
