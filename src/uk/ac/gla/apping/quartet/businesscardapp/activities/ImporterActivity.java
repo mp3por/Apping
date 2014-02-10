@@ -49,7 +49,7 @@ public class ImporterActivity extends Activity {
 	private static final String TAG = "BisinessCardApp.java";
 	protected String _path =  DATA_PATH + "/ocr.jpg";
 	protected boolean _taken;
-	OCR ocr;
+	//OCR ocr;
 
 	private Button mButtonCamera;
 	private Button mButtonGallery;
@@ -94,8 +94,8 @@ public class ImporterActivity extends Activity {
 
 	protected void startCameraActivity() {
 		
-		ocr = new OCR();
-		ocr.setPath(_path,getAssets());
+		//ocr = new OCR();
+		//ocr.setPath(_path,getAssets());
 		
 		
 		File file = new File(_path);
@@ -171,8 +171,8 @@ public class ImporterActivity extends Activity {
 		if (resultCode == -1) {
 			System.out.println("Activity return -1");
 			cameraGalleryResult(requestCode, resultCode, data);
-			ocrText = ocr.run();
-			System.out.println("OCRText: "+ocrText);
+			//ocrText = ocr.run();
+			//System.out.println("OCRText: "+ocrText);
 		} else {
 			Log.v(TAG, "User cancelled");
 		}

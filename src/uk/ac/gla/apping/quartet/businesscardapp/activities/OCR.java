@@ -1,5 +1,5 @@
 package uk.ac.gla.apping.quartet.businesscardapp.activities;
-
+/*
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -186,4 +186,4 @@ public class OCR {
 	}
 
 }
-
+*/
