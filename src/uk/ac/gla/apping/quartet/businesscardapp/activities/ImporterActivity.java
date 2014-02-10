@@ -11,6 +11,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
+import com.googlecode.tesseract.android.TessBaseAPI;
+
 import uk.ac.gla.apping.quartet.businesscardapp.data.ContactWithImages;
 import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
@@ -43,11 +45,12 @@ public class ImporterActivity extends Activity {
 	// OCR Variables
 	public static final String DATA_PATH = Environment
 			.getExternalStorageDirectory().toString() + "/SimpleAndroidOCR/";
-	public static final String lang = "eng";
+	//public static final String lang = "eng";
 	protected static final String PHOTO_TAKEN = "photo_taken";
 	private static final String TAG = "BisinessCardApp.java";
-	protected String _path;
+	protected String _path =  DATA_PATH + "/ocr.jpg";
 	protected boolean _taken;
+	OCR ocr;
 
 	private Button mButtonCamera;
 	private Button mButtonGallery;
@@ -68,11 +71,10 @@ public class ImporterActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// OCR save test
-				OCRSaveTest();
-				startCameraActivity();
+				 startCameraActivity();
 
 				// Nikis code
-				NikiStartCamera();
+				// NikiStartCamera();
 
 			}
 
@@ -92,22 +94,47 @@ public class ImporterActivity extends Activity {
 	}
 
 	protected void startCameraActivity() {
+		
+		ocr = new OCR();
+		ocr.setPath(_path,getAssets());
+		
+		
 		File file = new File(_path);
+		
 		Uri outputFileUri = Uri.fromFile(file);
 
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		
+		System.out.println("Intent made = true");
 		if (intent.resolveActivity(getPackageManager()) != null){
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+			System.out.println("StartActivityForResult");
 			startActivityForResult(intent, 0);
 
 		}
 		
 	}
 
+	protected void NikiStartCamera() {
+		// TODO Auto-generated method stub
+		Intent cameraIntent = new Intent(
+				android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+		// add check condition for security
+		if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+			// create the file where the photo should go
+			
+			// uncomment for saving in the phone memory
+			//if(NikiSavePic() != null){
+			//	cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(NikiSavePic()));
+			//}
+			
+			//	cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri); ?!??!?!?!?
+			startActivityForResult(cameraIntent, CAMERA_REQUEST);
+		}
+	}
+	
 	protected File NikiSavePic() {
 		File photo = null;
-
 		try {
 			photo = createImageFile();
 		} catch (IOException e) {
@@ -136,72 +163,6 @@ public class ImporterActivity extends Activity {
 		return image;
 	}
 
-	protected void NikiStartCamera() {
-		// TODO Auto-generated method stub
-		Intent cameraIntent = new Intent(
-				android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-		// add check condition for security
-		if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-			// create the file where the photo should go
-
-			// uncomment for saving in the phone memory
-			//if(NikiSavePic() != null){
-			//	cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(NikiSavePic()));
-			//}
-
-		//	cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri); ?!??!?!?!?
-			startActivityForResult(cameraIntent, CAMERA_REQUEST);
-		}
-	}
-
-	protected void OCRSaveTest() {
-		// TODO Auto-generated method stub
-		String[] paths = new String[] { DATA_PATH, DATA_PATH + "tessdata/" };
-
-		for (String path : paths) {
-			File dir = new File(path);
-			if (!dir.exists()) {
-				if (!dir.mkdirs()) {
-					Log.v(TAG, "ERROR: Creation of directory " + path
-							+ " on sdcard failed");
-					return;
-				} else {
-					Log.v(TAG, "Created directory " + path + " on sdcard");
-				}
-			}
-
-		}
-		if (!(new File(DATA_PATH + "tessdata/" + lang + ".traineddata"))
-				.exists()) {
-			try {
-
-				AssetManager assetManager = getAssets();
-				InputStream in = assetManager.open("tessdata/" + lang
-						+ ".traineddata");
-				// GZIPInputStream gin = new GZIPInputStream(in);
-				OutputStream out = new FileOutputStream(DATA_PATH + "tessdata/"
-						+ lang + ".traineddata");
-
-				// Transfer bytes from in to out
-				byte[] buf = new byte[1024];
-				int len;
-				// while ((lenf = gin.read(buff)) > 0) {
-				while ((len = in.read(buf)) > 0) {
-					out.write(buf, 0, len);
-				}
-				in.close();
-				// gin.close();
-				out.close();
-
-				Log.v(TAG, "Copied " + lang + " traineddata");
-			} catch (IOException e) {
-				Log.e(TAG,
-						"Was unable to copy " + lang + " traineddata "
-								+ e.toString());
-			}
-		}
-		_path = DATA_PATH + "/ocr.jpg";
-	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -210,8 +171,10 @@ public class ImporterActivity extends Activity {
 		String ocrText;
 		// OCR
 		if (resultCode == -1) {
-			cameraGalleryResult(requestCode, resultCode, data);
-			ocrText = onPhotoTaken();
+			System.out.println("Activity return -1");
+			//cameraGalleryResult(requestCode, resultCode, data);
+			ocrText = ocr.run();
+			System.out.println("OCRText: "+ocrText);
 		} else {
 			Log.v(TAG, "User cancelled");
 		}
@@ -348,95 +311,6 @@ public class ImporterActivity extends Activity {
 	    options.inJustDecodeBounds = false;
 	    return BitmapFactory.decodeFile(path, options);
 
-	}
-
-
-
-
-
-	protected String onPhotoTaken() {
-		_taken = true;
-
-		BitmapFactory.Options options = new BitmapFactory.Options();
-		options.inSampleSize = 4;
-
-		Bitmap bitmap = BitmapFactory.decodeFile(_path, options);
-
-		//Set Proper Orientation of the photo
-		try {
-			ExifInterface exif = new ExifInterface(_path);
-			int exifOrientation = exif.getAttributeInt(
-					ExifInterface.TAG_ORIENTATION,
-					ExifInterface.ORIENTATION_NORMAL);
-
-			Log.v(TAG, "Orient: " + exifOrientation);
-
-			int rotate = 0;
-
-			switch (exifOrientation) {
-			case ExifInterface.ORIENTATION_ROTATE_90:
-				rotate = 90;
-				break;
-			case ExifInterface.ORIENTATION_ROTATE_180:
-				rotate = 180;
-				break;
-			case ExifInterface.ORIENTATION_ROTATE_270:
-				rotate = 270;
-				break;
-			}
-
-			if (rotate != 0) {
-
-				// Getting width & height of the given image.
-				int w = bitmap.getWidth();
-				int h = bitmap.getHeight();
-
-				// Setting pre rotate
-				Matrix mtx = new Matrix();
-				mtx.preRotate(rotate);
-
-				// Rotating Bitmap
-				bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, false);
-			}
-
-			// Convert to ARGB_8888, required by tess
-			bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-
-		} catch (IOException e) {
-			Log.e(TAG, "Couldn't correct orientation: " + e.toString());
-		}
-
-		// _image.setImageBitmap( bitmap );
-
-		Log.v(TAG, "Before baseApi");
-
-		/*
-		
-		TessBaseAPI baseApi = new TessBaseAPI();
-		baseApi.setDebug(true);
-		baseApi.init(DATA_PATH, lang);
-		baseApi.setImage(bitmap);
-
-		String recognizedText = baseApi.getUTF8Text();
-
-		baseApi.end();
-
-		// You now have the text in recognizedText var, you can do anything with it.
-		// We will display a stripped out trimmed alpha-numeric version of it (if lang is eng)
-		// so that garbage doesn't make it to the display.
-
-
-		if ( lang.equalsIgnoreCase("eng") ) {
-			recognizedText = recognizedText.replaceAll("[^a-zA-Z0-9]+", " ");
-		}
-
-		recognizedText = recognizedText.trim();
-		return recognizedText;
-		
-		*/
-		
-		return "tmp test";
-		// Cycle done.
 	}
 
 }
