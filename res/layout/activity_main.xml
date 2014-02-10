@@ -78,10 +78,17 @@
 
     <ListView
         android:id="@+id/listViewContacts"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:divider="#b5b5b5"
         android:dividerHeight="1dp"
         android:listSelector="@drawable/item_list_activity_main" />
+    
+    <TextView 
+        android:id="@+id/textViewNoContacts"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        />
 
 </LinearLayout>

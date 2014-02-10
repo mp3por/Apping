@@ -18,24 +18,28 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class ContactAdapter extends BaseAdapter {
-	private static LayoutInflater inflater = null;
+	private static final String MESSAGE_NOCONTACTS = "No contacts";
+	private static final String MESSAGE_NOTHING_FOUND = "No contacts match search criteria";
 
-	private Spanned highlightMatch(String text) {
-		return Html.fromHtml(text.replace(mMatch, "<b><font color=red>" + mMatch + "</font></b>"));
-	}
+	private static LayoutInflater inflater = null;	
+	
+	private static ListView listView;
+	private static TextView textViewNoContacts; 
 	
     private Activity mActivity;
     private ArrayList<Contact> mContacts;
-
 	private String mMatch;
  
     public ContactAdapter(Activity activity, ArrayList<Contact> contacts, String search) {
         mActivity = activity;
         mContacts = contacts;
         inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        listView = (ListView) mActivity.findViewById(R.id.listViewContacts);
+        textViewNoContacts = (TextView) mActivity.findViewById(R.id.textViewNoContacts);
     }
  
     public int getCount() {
@@ -90,16 +94,12 @@ public class ContactAdapter extends BaseAdapter {
         ImageView thumbnail = (ImageView) vi.findViewById(R.id.imageViewLogo);
         thumbnail.setImageBitmap(BitmapFactory.decodeByteArray(contact.getThumbnail(), 0, contact.getThumbnail().length));
         thumbnail.setOnClickListener(new OnClickListener(){
-
 			@Override
 			public void onClick(View arg0) {	
 				Intent intent = new Intent(mActivity, CardViewerActivity.class);
 				intent.putExtra("id", contact.getId()); // passing the database id of the card to the CardViewerActivity activity
 				mActivity.startActivity(intent);
-			}});
-        
-        
-        
+			}});  
         
         ImageView actionCall = (ImageView) vi.findViewById(R.id.imageViewCall);
         actionCall.setOnClickListener(new OnClickListener(){
@@ -138,22 +138,40 @@ public class ContactAdapter extends BaseAdapter {
     }
 
 	public void filter(ArrayList<Contact> allContacts, String needle) {
-		
-		
-		if (!needle.equals("")) {	
-			ArrayList<Contact> filtered = new ArrayList<Contact>();
-			for (Contact contact : allContacts) {
-				if(contact.getName().contains(needle) || contact.getCompany().contains(needle) || contact.getEmail().contains(needle)) {
-					filtered.add(contact);
-				}
-			}
-		
-			mContacts = filtered;
+		if (allContacts.size() == 0) {
+			listView.setVisibility(View.GONE);
+			textViewNoContacts.setText(MESSAGE_NOCONTACTS);
+			textViewNoContacts.setVisibility(View.VISIBLE);
 		} else {
-			mContacts = allContacts;
+			
+			if (!needle.equals("")) {	
+				ArrayList<Contact> filtered = new ArrayList<Contact>();
+				for (Contact contact : allContacts) {
+					if(contact.getName().contains(needle) || contact.getCompany().contains(needle) || contact.getEmail().contains(needle)) {
+						filtered.add(contact);
+					}
+				}
+			
+				mContacts = filtered;
+			} else {
+				mContacts = allContacts;
+			}
+			
+			
+			if (mContacts.size() == 0) {
+				listView.setVisibility(View.GONE);
+				textViewNoContacts.setText(MESSAGE_NOTHING_FOUND);
+				textViewNoContacts.setVisibility(View.VISIBLE);
+			} else {
+				listView.setVisibility(View.VISIBLE);
+				textViewNoContacts.setVisibility(View.GONE);
+			}
 		}
-		
 		mMatch = needle;
 		notifyDataSetChanged(); 
+	}
+	
+	private Spanned highlightMatch(String text) {
+		return Html.fromHtml(text.replace(mMatch, "<b><font color=red>" + mMatch + "</font></b>"));
 	}
 }

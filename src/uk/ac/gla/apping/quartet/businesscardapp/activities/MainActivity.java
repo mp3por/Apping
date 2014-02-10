@@ -37,23 +37,20 @@ public class MainActivity extends Activity {
 	private ListView mListViewContacts;
 	private ArrayList<Contact> mArrayListContacts;
 	private ContactHelper db = ContactHelper.getInstance(this);
-	private int mContactCount;
+	private int mContactCount = -1;
 	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.activity_main);	
-		
+		setContentView(R.layout.activity_main);		
 		
 		mEditTextSearch = (EditText) findViewById(R.id.editTextSearch);
 		mEditTextSearch.addTextChangedListener(new TextWatcher() {
-			public void afterTextChanged(Editable s) {
-			}
+			public void afterTextChanged(Editable s) {}
 
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-			}
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				if (mContactCount != 0) {
@@ -63,11 +60,8 @@ public class MainActivity extends Activity {
 			}
 		});
 		
-		
-		
 		mImageViewAdd = (ImageView) findViewById(R.id.imageViewAdd);
-		mImageViewAdd.setOnClickListener(new OnClickListener(){
-				
+		mImageViewAdd.setOnClickListener(new OnClickListener(){	
 			@Override
 			public void onClick(View arg0) {			
 				Intent intent = new Intent(MainActivity.this, ImporterActivity.class);
@@ -76,8 +70,7 @@ public class MainActivity extends Activity {
 		});
 		
 		mImageViewSearch = (ImageView) findViewById(R.id.imageViewSearch);
-		mImageViewSearch.setOnClickListener(new OnClickListener(){
-				
+		mImageViewSearch.setOnClickListener(new OnClickListener(){	
 			@Override
 			public void onClick(View arg0) {			
 	        	CharSequence text = "YAY! I will be replaced soon!";
@@ -88,17 +81,12 @@ public class MainActivity extends Activity {
 		
 		Button fuckingCrashMe = (Button) findViewById(R.id.buttonCrashMe);
 		fuckingCrashMe.setOnClickListener(new OnClickListener(){
-				
 			@Override
 			public void onClick(View arg0) {			
 				PopulateDatabase thread = new PopulateDatabase();
-				
-				thread.execute();
-				
-				
+				thread.execute();	
 			}
 		});
-	
 	}
 
 	
@@ -124,7 +112,6 @@ public class MainActivity extends Activity {
 	    	toast.show();
     	}
     	
-    	
     	// update the adapter with contacts whenever the activity is brought to the front
     	// check contact count and update adapter only if contact count has changed
     	// provided that it is impossible to add one contact and delete another contact w/o opening MainActivity 
@@ -144,6 +131,7 @@ public class MainActivity extends Activity {
         return true;
     }
     
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -172,9 +160,7 @@ public class MainActivity extends Activity {
 	}
 	
 	
-	
 	private class PopulateDatabase extends AsyncTask<String, Void, Boolean> {
-
 		private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
 
 		/** progress dialog to show user that the backup is processing. */
@@ -199,7 +185,6 @@ public class MainActivity extends Activity {
     			contact.setThumbnail(db.getContactById(1).getThumbnail());	
         		db.createContact(contact);
         	}
-			
 			
 			return true;
 		}
