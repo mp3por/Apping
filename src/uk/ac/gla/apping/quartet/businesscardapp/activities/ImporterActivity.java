@@ -42,7 +42,7 @@ public class ImporterActivity extends Activity {
 	// public static final String lang = "eng";
 	protected static final String PHOTO_TAKEN = "photo_taken";
 	private static final String TAG = "BisinessCardApp.java";
-	protected String _path = DATA_PATH + "ocr.jpg";
+	protected String _path = "/sdcard/" + "ocr.jpg";
 	protected boolean _taken;
 	// OCR ocr;
 
@@ -52,7 +52,15 @@ public class ImporterActivity extends Activity {
 	private Uri mImageCaptureUri;
 	public String recogString;
 	public Bitmap bm;
-
+	
+	public String getPath() {
+		return _path;
+	} 
+	
+	public void setBitmap(Bitmap bitmap) {
+		bm = bitmap;
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -108,7 +116,7 @@ public class ImporterActivity extends Activity {
 		if (intent.resolveActivity(getPackageManager()) != null) {
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
 			System.out.println("StartActivityForResult");
-			startActivityForResult(intent, 1234);
+			startActivityForResult(intent, CAMERA_REQUEST);
 
 		}
 
@@ -168,33 +176,27 @@ public class ImporterActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.i("requestCode ", Integer.toString(requestCode));
 		Log.i("resultCode ", Boolean.toString(resultCode==RESULT_OK));
-		String ocrText;
-		if (requestCode == 123) {
-			if (resultCode == RESULT_OK) {
-				Bundle basket = data.getExtras();
-				ocrText = basket.getString("recognizedText");
-			}
-		}
-		if (requestCode == 1234) {
-			if (resultCode == RESULT_OK) {
-				Log.i("starting OCRTask :", "OK");
-				OCRTask task = new OCRTask();
-				task.execute();
-			}
-		}
-		if (requestCode == CAMERA_REQUEST) {
-			if (resultCode == -1) {
-				System.out.println("Activity return -1");
-				// cameraGalleryResult(requestCode, resultCode, data);
-				// ocrText = ocr.run();
-				// System.out.println("OCRText: "+ocrText);
+
+		if (resultCode == RESULT_OK) {
+			if (requestCode == CAMERA_REQUEST) {	
+				
+			} else if (requestCode == GALLERY_REQUEST) { // gallery returned
+				//TODO: change Uri path if it is from galary.
+				// picture
+				// Uri selectedImage = data.getData();
+				// Bitmap bitmap =
+				// MediaStore.Images.Media.getBitmap(this.getContentResolver(),
+				// selectedImage);
 			} else {
-				Log.v(TAG, "User cancelled");
+				// fail
 			}
+			
+			Log.i("starting OCRTask :", "OK");
+			OCRTask task = new OCRTask();
+			task.execute();
 		}
-
+		
 		// save in the db here
-
 		/*
 		 * Intent intent = new Intent(ImporterActivity.this,
 		 * CardViewerActivity.class); intent.putExtra("id", 0); // passing the
@@ -204,10 +206,8 @@ public class ImporterActivity extends Activity {
 		 */
 	}
 
-	private void cameraGalleryResult(int requestCode, int resultCode,
-			Intent data) {
-		if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-			Bitmap photo = (Bitmap) data.getExtras().get("data");
+	private void afterOCR() {
+			Bitmap photo = bm;
 
 			// ------------------------- TMP CODE FOR TESTING
 			// -------------------------\\
@@ -243,17 +243,6 @@ public class ImporterActivity extends Activity {
 					photo.getRowBytes() * photo.getHeight() + " ");
 			Log.e("Compressed dimensions",
 					decoded.getRowBytes() * decoded.getHeight() + " ");
-
-		} else if (requestCode == GALLERY_REQUEST
-				&& resultCode == Activity.RESULT_OK) { // gallery returned
-			// picture
-			// Uri selectedImage = data.getData();
-			// Bitmap bitmap =
-			// MediaStore.Images.Media.getBitmap(this.getContentResolver(),
-			// selectedImage);
-		} else {
-			// fail
-		}
 	}
 
 	private class OCRTask extends AsyncTask<String, Void, Boolean> {
@@ -272,7 +261,7 @@ public class ImporterActivity extends Activity {
 		protected Boolean doInBackground(final String... args) {
 			Log.i("ImporterActivity", "async Pth: "
 					+ ImporterActivity.this._path);
-			OCR ocr = new OCR(ImporterActivity.this._path, getAssets());
+			OCR ocr = new OCR(ImporterActivity.this, getAssets());
 			ocr.run();
 			ImporterActivity.this.recogString = ocr.getRecognizedText();
 			ImporterActivity.this.bm = ocr.getBitmap();
@@ -289,7 +278,7 @@ public class ImporterActivity extends Activity {
 				dialog.dismiss();
 			}
 			
-
+			ImporterActivity.this.afterOCR();
 		}
 	}
 }

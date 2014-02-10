@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import android.app.Activity;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,6 +34,8 @@ public class OCR {
 	private boolean pathSet = false;
 	private AssetManager assetManager;
 
+	private ImporterActivity mActivity;
+	
 	protected static final String PHOTO_TAKEN = "photo_taken";
 
 	private static OCR instance;
@@ -43,9 +46,10 @@ public class OCR {
 		}
 		return instance;
 	}*/
-	public OCR(String _path,AssetManager assetManager) {
+	public OCR(ImporterActivity activity, AssetManager assetManager) {
 		// TODO Auto-generated constructor stub
-		this._path=_path;
+		mActivity = activity;
+		this._path = mActivity.getPath();
 		this.assetManager = assetManager;
 	}
 	
@@ -96,6 +100,8 @@ public class OCR {
 				// Getting width & height of the given image.
 				int w = bitmap.getWidth();
 				int h = bitmap.getHeight();
+				
+				
 
 				// Setting pre rotate
 				Matrix mtx = new Matrix();
@@ -115,6 +121,8 @@ public class OCR {
 		// _image.setImageBitmap( bitmap );
 
 		Log.v(TAG, "Before baseApi");
+		
+		//TODO: change bitmap brithness, but return the original
 
 		recognizedText = runTess(bitmap);
 
