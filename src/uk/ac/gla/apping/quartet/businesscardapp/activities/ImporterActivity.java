@@ -53,14 +53,14 @@ public class ImporterActivity extends Activity {
 	private ImageView mImage;
 	private Uri mImageCaptureUri;
 	public String recogString;
-	public Bitmap bm;
+	public Bitmap mBitmap;
 
 	public String getPath() {
 		return _path;
 	}
 
 	public void setBitmap(Bitmap bitmap) {
-		bm = bitmap;
+		mBitmap = bitmap;
 	}
 
 	@Override
@@ -204,7 +204,7 @@ public class ImporterActivity extends Activity {
 	}
 
 	private void afterOCR() {
-		Bitmap photo = bm;
+		Bitmap photo = mBitmap;
 
 		// ------------------------- TMP CODE FOR TESTING
 		// -------------------------\\
@@ -256,15 +256,16 @@ public class ImporterActivity extends Activity {
 
 		@Override
 		protected Boolean doInBackground(final String... args) {
+			/*
 			Log.i("ImporterActivity", "async Pth: "
 					+ ImporterActivity.this._path);
 			OCR ocr = new OCR(ImporterActivity.this, getAssets());
 			try {
 				ocr.run();
 				ImporterActivity.this.recogString = ocr.getRecognizedText();
-				ImporterActivity.this.bm = ocr.getBitmap();
+				ImporterActivity.this.mBitmap = ocr.getBitmap();
 				Log.i("recognizedText", recogString);
-				Log.i("Image ?", bm.toString());
+				Log.i("Image ?", mBitmap.toString());
 			} catch (OCRTestdataMissingFiles e) {
 
 				e.printStackTrace();
@@ -280,12 +281,16 @@ public class ImporterActivity extends Activity {
 			}
 
 			ocr = null;
+			*/
 			return true;
 		}
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
-			mImage.setImageBitmap(bm);
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inSampleSize = 4;
+			mBitmap = BitmapFactory.decodeFile(_path, options);
+			mImage.setImageBitmap(mBitmap);
 			if (dialog.isShowing()) {
 				dialog.dismiss();
 			}

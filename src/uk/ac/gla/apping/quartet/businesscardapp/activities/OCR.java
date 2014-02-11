@@ -8,7 +8,6 @@ import java.io.OutputStream;
 
 import CustomExceptions.OCRCreateDirError;
 import CustomExceptions.OCRTestdataMissingFiles;
-import android.app.Activity;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,9 +16,10 @@ import android.media.ExifInterface;
 import android.os.Environment;
 import android.util.Log;
 
-import com.googlecode.tesseract.android.TessBaseAPI;
+//import com.googlecode.tesseract.android.TessBaseAPI;
 
 public class OCR {
+/*
 	//Path settings
 	public static final String DATA_PATH = Environment.getExternalStorageDirectory().toString() + "/BusinessCard/";
 	public static final String lang = "eng";
@@ -98,9 +98,9 @@ public class OCR {
 			// Convert to ARGB_8888, required by tess
 			bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
 
-		/*} catch (IOException e) {
-			Log.e(TAG, "Couldn't correct orientation: " + e.toString());
-		}*/
+		//} catch (IOException e) {
+		//	Log.e(TAG, "Couldn't correct orientation: " + e.toString());
+		//}
 
 		// _image.setImageBitmap( bitmap );
 
@@ -197,5 +197,6 @@ public class OCR {
 		this._path = _path;
 	}
 
+	*/
 }
 
