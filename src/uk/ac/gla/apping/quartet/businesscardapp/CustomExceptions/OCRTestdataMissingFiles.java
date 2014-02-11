@@ -1,4 +1,4 @@
-package CustomExceptions;
+package uk.ac.gla.apping.quartet.businesscardapp.CustomExceptions;
 
 public class OCRTestdataMissingFiles extends Exception {
 

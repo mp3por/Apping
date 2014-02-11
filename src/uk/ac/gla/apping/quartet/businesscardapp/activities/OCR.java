@@ -6,8 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import CustomExceptions.OCRCreateDirError;
-import CustomExceptions.OCRTestdataMissingFiles;
+import uk.ac.gla.apping.quartet.businesscardapp.CustomExceptions.OCRCreateDirError;
+import uk.ac.gla.apping.quartet.businesscardapp.CustomExceptions.OCRTestdataMissingFiles;
+
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

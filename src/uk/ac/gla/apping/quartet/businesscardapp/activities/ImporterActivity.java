@@ -9,11 +9,11 @@ import java.util.Date;
 import java.util.Random;
 
 import uk.ac.gla.apping.quartet.businesscardapp.data.ContactWithImages;
+import uk.ac.gla.apping.quartet.businesscardapp.CustomExceptions.OCRCreateDirError;
+import uk.ac.gla.apping.quartet.businesscardapp.CustomExceptions.OCRTestdataMissingFiles;
 import uk.ac.gla.apping.quartet.businesscardapp.activities.OCR;
 import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
-import CustomExceptions.OCRCreateDirError;
-import CustomExceptions.OCRTestdataMissingFiles;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
