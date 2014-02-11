@@ -8,10 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
+import uk.ac.gla.apping.quartet.businesscardapp.CustomExceptions.FileNotDeletedException;
 import uk.ac.gla.apping.quartet.businesscardapp.data.ContactWithImages;
-import uk.ac.gla.apping.quartet.businesscardapp.CustomExceptions.OCRCreateDirError;
-import uk.ac.gla.apping.quartet.businesscardapp.CustomExceptions.OCRTestdataMissingFiles;
-import uk.ac.gla.apping.quartet.businesscardapp.activities.OCR;
 import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
@@ -24,6 +22,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Images.Media;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,16 +34,19 @@ import android.widget.ImageView;
  */
 
 public class ImporterActivity extends Activity {
-	private static final int CAMERA_REQUEST = 1888;
+	private static final int CAMERA_REQUEST = 0;
 	private static final int GALLERY_REQUEST = 3;
-
+	private static final String FILE_NAME = "ocr.jpg";
+	private static final String DIRECTORY = "/sdcard/";
+	
+	
 	// OCR Variables
 	public static final String DATA_PATH = Environment
 			.getExternalStorageDirectory().toString() + "/BusinessCard/";
 	// public static final String lang = "eng";
 	protected static final String PHOTO_TAKEN = "photo_taken";
 	private static final String TAG = "BisinessCardApp.java";
-	protected String _path = "/sdcard/" + "ocr.jpg";
+	protected String _path = DIRECTORY + FILE_NAME;
 	protected boolean _taken;
 	// OCR ocr;
 
@@ -94,9 +96,7 @@ public class ImporterActivity extends Activity {
 
 			@Override
 			public void onClick(View arg0) {
-				Intent intent = new Intent(
-						Intent.ACTION_PICK,
-						android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+				Intent intent = new Intent(Intent.ACTION_PICK, Media.INTERNAL_CONTENT_URI);
 				startActivityForResult(intent, GALLERY_REQUEST);
 			}
 		});
@@ -117,26 +117,6 @@ public class ImporterActivity extends Activity {
 
 		}
 
-	}
-
-	protected void NikiStartCamera() {
-		// TODO Auto-generated method stub
-		Intent cameraIntent = new Intent(
-				android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-		// add check condition for security
-		if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-			// create the file where the photo should go
-
-			// uncomment for saving in the phone memory
-			// if(NikiSavePic() != null){
-			// cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-			// Uri.fromFile(NikiSavePic()));
-			// }
-
-			// cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,
-			// mImageCaptureUri); ?!??!?!?!?
-			startActivityForResult(cameraIntent, CAMERA_REQUEST);
-		}
 	}
 
 	protected File NikiSavePic() {
@@ -193,21 +173,16 @@ public class ImporterActivity extends Activity {
 			task.execute();
 		}
 
-		// save in the db here
-		/*
-		 * Intent intent = new Intent(ImporterActivity.this,
-		 * CardViewerActivity.class); intent.putExtra("id", 0); // passing the
-		 * database id of the card to the CardViewerActivity activity
-		 * startActivity(intent); finish(); // this activity must be terminated,
-		 * so that user can't use back button to return to it
-		 */
+		
 	}
 
 	private void afterOCR() {
-		Bitmap photo = mBitmap;
+		
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inSampleSize = 4;
+		Bitmap photo = BitmapFactory.decodeFile(_path, options);
 
-		// ------------------------- TMP CODE FOR TESTING
-		// -------------------------\\
+		// -------------------------  TMP CODE FOR TESTING  -------------------------\\
 
 		// aspect ratio? never heard of it...
 		photo = Bitmap.createScaledBitmap(photo, 200, 200, true);
@@ -231,20 +206,41 @@ public class ImporterActivity extends Activity {
 		contact.setNumber("+44711111");
 		contact.setThumbnail(byteThumbnail);
 		ContactHelper db = ContactHelper.getInstance(this);
-		db.createContact(contact);
+		contact = db.createContact(contact);
 
-		// ------------------------- END [TMP CODE FOR TESTING]
-		// -------------------------\\
+		// ------------------------- END [TMP CODE FOR TESTING] -------------------------\\
 
 		Log.e("Original   dimensions", photo.getRowBytes() * photo.getHeight()
 				+ " ");
 		Log.e("Compressed dimensions",
 				decoded.getRowBytes() * decoded.getHeight() + " ");
+		
+		
+		
+		Intent intent = new Intent(ImporterActivity.this, CardViewerActivity.class); 
+		intent.putExtra("id", contact.getId());
+		startActivity(intent); 
+		finish(); 
 	}
 
+	
+	private void deleteImageFile() {
+		try {
+			File file = new File(DIRECTORY, FILE_NAME); 
+			if (!file.delete()) {
+				if(!this.deleteFile(FILE_NAME)) {
+					throw new FileNotDeletedException("Could not delete file!");
+				}
+			}
+		} catch (Exception e) {
+			Log.e("BusinessCardApp", "Could not delete file: "+ e.getMessage());
+		}
+	}
+	
+	
 	private class OCRTask extends AsyncTask<String, Void, Boolean> {
-		private ProgressDialog dialog = new ProgressDialog(
-				ImporterActivity.this);
+		private ImporterActivity mActivity = ImporterActivity.this;
+		private ProgressDialog dialog = new ProgressDialog(mActivity);
 
 		/** progress dialog to show user that the backup is processing. */
 		/** application context. */
@@ -258,26 +254,26 @@ public class ImporterActivity extends Activity {
 		protected Boolean doInBackground(final String... args) {
 			/*
 			Log.i("ImporterActivity", "async Pth: "
-					+ ImporterActivity.this._path);
-			OCR ocr = new OCR(ImporterActivity.this, getAssets());
+					+ mActivity._path);
+			OCR ocr = new OCR(mActivity, getAssets());
 			try {
 				ocr.run();
-				ImporterActivity.this.recogString = ocr.getRecognizedText();
-				ImporterActivity.this.mBitmap = ocr.getBitmap();
+				mActivity.recogString = ocr.getRecognizedText();
+				mActivity.mBitmap = ocr.getBitmap();
 				Log.i("recognizedText", recogString);
 				Log.i("Image ?", mBitmap.toString());
 			} catch (OCRTestdataMissingFiles e) {
 
 				e.printStackTrace();
-				ImporterActivity.this.recogString = null;
+				ImActivity.recogString = null;
 			} catch (OCRCreateDirError e) {
 
 				e.printStackTrace();
-				ImporterActivity.this.recogString = null;
+				mActivity.recogString = null;
 			} catch (IOException e) {
 
 				e.printStackTrace();
-				ImporterActivity.this.recogString = null;
+				mActivity.recogString = null;
 			}
 
 			ocr = null;
@@ -287,15 +283,12 @@ public class ImporterActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
-			BitmapFactory.Options options = new BitmapFactory.Options();
-			options.inSampleSize = 4;
-			mBitmap = BitmapFactory.decodeFile(_path, options);
 			mImage.setImageBitmap(mBitmap);
 			if (dialog.isShowing()) {
 				dialog.dismiss();
 			}
 
-			ImporterActivity.this.afterOCR();
+			mActivity.afterOCR();
 		}
 	}
 }
