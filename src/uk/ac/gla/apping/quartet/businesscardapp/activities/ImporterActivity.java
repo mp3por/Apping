@@ -182,6 +182,8 @@ public class ImporterActivity extends Activity {
 		options.inSampleSize = 4;
 		Bitmap photo = BitmapFactory.decodeFile(_path, options);
 
+		deleteImageFile();
+		
 		// -------------------------  TMP CODE FOR TESTING  -------------------------\\
 
 		// aspect ratio? never heard of it...
