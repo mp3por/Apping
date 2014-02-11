@@ -41,14 +41,14 @@ public class ImporterActivity extends Activity {
 	
 	
 	// OCR Variables
-	public static final String DATA_PATH = Environment
-			.getExternalStorageDirectory().toString() + "/BusinessCard/";
-	// public static final String lang = "eng";
+	public static final String DATA_PATH = Environment.getExternalStorageDirectory().toString() + "/BusinessCard/";
 	protected static final String PHOTO_TAKEN = "photo_taken";
 	private static final String TAG = "BisinessCardApp.java";
 	protected String _path = DIRECTORY + FILE_NAME;
 	protected boolean _taken;
 	// OCR ocr;
+	
+	private Intent mSenderIntent = null;
 
 	private Button mButtonCamera;
 	private Button mButtonGallery;
@@ -80,15 +80,8 @@ public class ImporterActivity extends Activity {
 
 			@Override
 			public void onClick(View arg0) {
-				// OCR save test
 				startCameraActivity();
-				// startOCRActivity();
-
-				// Nikis code
-				// NikiStartCamera();
-
 			}
-
 		});
 
 		mButtonGallery = (Button) findViewById(R.id.buttonGallery);
@@ -116,7 +109,6 @@ public class ImporterActivity extends Activity {
 			startActivityForResult(intent, CAMERA_REQUEST);
 
 		}
-
 	}
 
 	protected File NikiSavePic() {
@@ -150,10 +142,9 @@ public class ImporterActivity extends Activity {
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.i("requestCode ", Integer.toString(requestCode));
-		Log.i("resultCode ", Boolean.toString(resultCode == RESULT_OK));
-
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		mSenderIntent = intent;
+		
 		if (resultCode == RESULT_OK) {
 			if (requestCode == CAMERA_REQUEST) {
 
