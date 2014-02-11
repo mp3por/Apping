@@ -189,7 +189,6 @@ public class ImporterActivity extends Activity {
 			}
 
 			Log.i("starting OCRTask :", "OK");
-			this.bm = (Bitmap) data.getExtras().get("data");
 			OCRTask task = new OCRTask();
 			task.execute();
 		}
