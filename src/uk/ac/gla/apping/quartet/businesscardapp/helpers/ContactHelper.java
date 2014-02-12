@@ -127,7 +127,32 @@ public class ContactHelper {
 		cursor.close();
 		return contacts;
 	}
+	
+	
+	public Contact getContactWithoutimagesById(int id) {
+		Cursor cursor = dbHelper.getReadableDatabase().query(ContactsDbHelper.TABLE_CONTACTS,
+				ContactsDbHelper.allContactColumns, null, null, null, null, null);
 
+		cursor.moveToFirst();
+		Contact contact = cursorToContact(cursor);
+
+		cursor.close();
+		return contact;
+	}
+	
+	
+	public byte[] getContactThumbnailById(int id) {
+		
+		Cursor cursor = dbHelper.getReadableDatabase().query(ContactsDbHelper.TABLE_CONTACT_THUMBNAILS,
+				ContactsDbHelper.allContactThumbnailColumns, ContactsDbHelper.COLUMN_ID + "=" + id, null, null, null, null);
+		cursor.moveToFirst();
+
+		byte[] thumbnail = cursor.getBlob(cursor.getColumnIndex(ContactsDbHelper.COLUMN_THUMBNAIL));
+		
+		cursor.close();
+		return thumbnail;
+	}
+	
 	
 	public Contact getContactById(int id) {
 		String selectQuery = "SELECT "
@@ -200,6 +225,19 @@ public class ContactHelper {
 		contact.setCompany(cursor.getString(cursor.getColumnIndex(ContactsDbHelper.COLUMN_COMPANY)));
 		
 		contact.setThumbnail(cursor.getBlob(cursor.getColumnIndex(ContactsDbHelper.COLUMN_THUMBNAIL)));
+		
+		return contact;
+	}
+	
+	private Contact cursorToContactWithoutImages(Cursor cursor) {
+		Contact contact = new Contact();
+		
+		contact.setId(cursor.getInt(cursor.getColumnIndex(ContactsDbHelper.COLUMN_ID)));
+		
+		contact.setName(cursor.getString(cursor.getColumnIndex(ContactsDbHelper.COLUMN_NAME)));
+		contact.setEmail(cursor.getString(cursor.getColumnIndex(ContactsDbHelper.COLUMN_EMAIL)));
+		contact.setNumber(cursor.getString(cursor.getColumnIndex(ContactsDbHelper.COLUMN_NUMBER)));
+		contact.setCompany(cursor.getString(cursor.getColumnIndex(ContactsDbHelper.COLUMN_COMPANY)));
 		
 		return contact;
 	}
