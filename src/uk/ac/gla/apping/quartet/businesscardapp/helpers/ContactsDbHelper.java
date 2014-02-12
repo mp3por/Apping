@@ -9,6 +9,7 @@ public class ContactsDbHelper extends SQLiteOpenHelper {
 
 	public static final String TABLE_CONTACTS = "contacts";
 	public static final String TABLE_CONTACT_IMAGES = "contact_images";
+	public static final String TABLE_CONTACT_THUMBNAILS = "contact_thumbnails";
 	
 	public static final String COLUMN_ID = "id";
 	public static final String COLUMN_NAME = "name";
@@ -19,11 +20,12 @@ public class ContactsDbHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_FRONT_IMAGE = "front_image";
 	public static final String COLUMN_BACK_IMAGE = "back_image";
 	
-	public static String[] allContactColumns = {COLUMN_ID, COLUMN_NAME, COLUMN_EMAIL, COLUMN_NUMBER, COLUMN_COMPANY, COLUMN_THUMBNAIL};
+	public static String[] allContactColumns = {COLUMN_ID, COLUMN_NAME, COLUMN_EMAIL, COLUMN_NUMBER, COLUMN_COMPANY};
 	public static String[] allContactImageColumns = {COLUMN_ID, COLUMN_FRONT_IMAGE, COLUMN_BACK_IMAGE};
+	public static String[] allContactThumbnailColumns = {COLUMN_ID, COLUMN_THUMBNAIL};
 
 	private static final String DATABASE_NAME = "contacts.db";
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 4;
 
 	private static final String DATABASE_CREATE_CONTACTS = "create table "
 			+ TABLE_CONTACTS + "(" + COLUMN_ID
@@ -31,16 +33,26 @@ public class ContactsDbHelper extends SQLiteOpenHelper {
 			+ COLUMN_NAME + " character null,"
 			+ COLUMN_EMAIL + " character null,"
 			+ COLUMN_NUMBER + " character null,"
-			+ COLUMN_COMPANY + " character null,"
-			+ COLUMN_THUMBNAIL + " BLOB null"
+			+ COLUMN_COMPANY + " character null"
 			+ ");";
 
 			
 	private static final String DATABASE_CREATE_CONTACT_IMAGES = "create table "
-			+ TABLE_CONTACT_IMAGES + "(" + COLUMN_ID
+			+ TABLE_CONTACT_IMAGES 
+			+ "(" + COLUMN_ID
 			+ " integer primary key autoincrement, "
 			+ COLUMN_FRONT_IMAGE + " BLOB null,"
 			+ COLUMN_BACK_IMAGE + " BLOB null"
+			+ ");";
+	
+	
+	
+	
+	private static final String DATABASE_CREATE_CONTACT_THUMBNAILS = "create table "
+			+ TABLE_CONTACT_THUMBNAILS 
+			+ "(" + COLUMN_ID
+			+ " integer primary key autoincrement, "
+			+ COLUMN_THUMBNAIL + " BLOB null"
 			+ ");";
 
 	public ContactsDbHelper(Context context) {
@@ -54,6 +66,7 @@ public class ContactsDbHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE_CONTACTS);
 		database.execSQL(DATABASE_CREATE_CONTACT_IMAGES);
+		database.execSQL(DATABASE_CREATE_CONTACT_THUMBNAILS);
 	}
 
 	/*
@@ -66,6 +79,7 @@ public class ContactsDbHelper extends SQLiteOpenHelper {
 						+ newVersion + ", which will destroy all old data");
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACT_IMAGES);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACT_THUMBNAILS);
 		onCreate(db);
 	}
 } 
