@@ -3,7 +3,7 @@ package uk.ac.gla.apping.quartet.businesscardapp.activities;
 import java.util.ArrayList;
 import java.util.Random;
 
-import uk.ac.gla.apping.quartet.businesscardapp.adapters.ContactAdapter;
+import uk.ac.gla.apping.quartet.businesscardapp.adapters.ContactStaticAdapter;
 import uk.ac.gla.apping.quartet.businesscardapp.data.Contact;
 import uk.ac.gla.apping.quartet.businesscardapp.data.ContactWithImages;
 import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
 	private ImageView mImageViewAdd;
 	private ImageView mImageViewSearch;
 	private EditText mEditTextSearch;
-	private ContactAdapter mContactAdapter;
+	private ContactStaticAdapter mContactAdapter;
 	private ListView mListViewContacts;
 	private ArrayList<Contact> mArrayListContacts;
 	private ContactHelper db = ContactHelper.getInstance(this);
@@ -153,7 +153,7 @@ public class MainActivity extends Activity {
 
 		mListViewContacts = (ListView) findViewById(R.id.listViewContacts);
 
-		mContactAdapter = new ContactAdapter(MainActivity.this, mArrayListContacts, "");
+		mContactAdapter = new ContactStaticAdapter(MainActivity.this, mArrayListContacts, "");
 		mContactAdapter.filter(mArrayListContacts, mEditTextSearch.getText().toString());
 
 		mListViewContacts.setAdapter(mContactAdapter);

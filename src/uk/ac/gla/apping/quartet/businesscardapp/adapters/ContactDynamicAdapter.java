@@ -3,13 +3,17 @@ package uk.ac.gla.apping.quartet.businesscardapp.adapters;
 import java.util.ArrayList;
 
 import uk.ac.gla.apping.quartet.businesscardapp.activities.CardViewerActivity;
+import uk.ac.gla.apping.quartet.businesscardapp.activities.ImporterActivity;
 import uk.ac.gla.apping.quartet.businesscardapp.data.Contact;
+import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
@@ -21,7 +25,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class ContactAdapter extends BaseAdapter {
+public class ContactDynamicAdapter extends BaseAdapter {
 	private static final String MESSAGE_NOCONTACTS = "No contacts";
 	private static final String MESSAGE_NOTHING_FOUND = "No contacts match search criteria";
 
@@ -33,8 +37,10 @@ public class ContactAdapter extends BaseAdapter {
     private Activity mActivity;
     private ArrayList<Contact> mContacts;
 	private String mMatch;
+
+	private ContactHelper db = ContactHelper.getInstance(mActivity);
  
-    public ContactAdapter(Activity activity, ArrayList<Contact> contacts, String search) {
+    public ContactDynamicAdapter(Activity activity, ArrayList<Contact> contacts, String search) {
         mActivity = activity;
         mContacts = contacts;
         inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -92,7 +98,10 @@ public class ContactAdapter extends BaseAdapter {
         }
           
         ImageView thumbnail = (ImageView) vi.findViewById(R.id.imageViewLogo);
-        thumbnail.setImageBitmap(BitmapFactory.decodeByteArray(contact.getThumbnail(), 0, contact.getThumbnail().length));
+        
+        
+        (new ImageUpdater(thumbnail, contact.getId())).execute();
+        
         thumbnail.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {	
@@ -173,5 +182,30 @@ public class ContactAdapter extends BaseAdapter {
 	
 	private Spanned highlightMatch(String text) {
 		return Html.fromHtml(text.replace(mMatch, "<b><font color=red>" + mMatch + "</font></b>"));
+	}
+	
+	private class ImageUpdater extends AsyncTask<String, Void, Boolean> {
+		private ImageView mThumbnail;
+		private int id;
+		private byte[] mBytes;
+		
+		public ImageUpdater(ImageView imageView, int contactId) {
+			mThumbnail = imageView;
+			id = contactId;
+		}
+
+		@Override
+		protected void onPreExecute() {}
+
+		@Override
+		protected Boolean doInBackground(final String... args) {
+			mBytes = db.getContactThumbnailById(id);
+			return true;
+		}
+
+		@Override
+		protected void onPostExecute(final Boolean success) {
+			mThumbnail.setImageBitmap(BitmapFactory.decodeByteArray(mBytes, 0, mBytes.length));
+		}
 	}
 }
