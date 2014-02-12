@@ -134,7 +134,7 @@ public class ContactHelper {
 				ContactsDbHelper.allContactColumns, null, null, null, null, null);
 
 		cursor.moveToFirst();
-		Contact contact = cursorToContact(cursor);
+		Contact contact = cursorToContactWithoutImages(cursor);
 
 		cursor.close();
 		return contact;
