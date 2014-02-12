@@ -128,6 +128,23 @@ public class ContactHelper {
 		return contacts;
 	}
 	
+	public List<Contact> getAllContactsWithoutThumbnails() {
+		// allocating the right arraylist size
+		List<Contact> contacts = new ArrayList<Contact>(getContactCount() + 2);
+		
+		Cursor cursor = dbHelper.getReadableDatabase().query(ContactsDbHelper.TABLE_CONTACTS,
+				ContactsDbHelper.allContactColumns, null, null, null, null, null);
+
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			Contact contact = cursorToContactWithoutImages(cursor);
+			contacts.add(contact);
+			cursor.moveToNext();
+		}
+
+		cursor.close();
+		return contacts;
+	}
 	
 	public Contact getContactWithoutimagesById(int id) {
 		Cursor cursor = dbHelper.getReadableDatabase().query(ContactsDbHelper.TABLE_CONTACTS,

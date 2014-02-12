@@ -3,6 +3,8 @@ package uk.ac.gla.apping.quartet.businesscardapp.activities;
 import java.util.ArrayList;
 import java.util.Random;
 
+import uk.ac.gla.apping.quartet.businesscardapp.adapters.ContactAdapter;
+import uk.ac.gla.apping.quartet.businesscardapp.adapters.ContactDynamicAdapter;
 import uk.ac.gla.apping.quartet.businesscardapp.adapters.ContactStaticAdapter;
 import uk.ac.gla.apping.quartet.businesscardapp.data.Contact;
 import uk.ac.gla.apping.quartet.businesscardapp.data.ContactWithImages;
@@ -15,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,11 +32,13 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 	public static final int RESULT_DELETE = 1;
 	public static final int RESULT_SAVE = 2;
+	public static final int RESULT_UPDATE = 3;
+	private static final int CONTACT_ADAPTER_SWITCH_POINT = 500;
 	
 	private ImageView mImageViewAdd;
 	private ImageView mImageViewSearch;
 	private EditText mEditTextSearch;
-	private ContactStaticAdapter mContactAdapter;
+	private ContactAdapter mContactAdapter;
 	private ListView mListViewContacts;
 	private ArrayList<Contact> mArrayListContacts;
 	private ContactHelper db = ContactHelper.getInstance(this);
@@ -103,6 +108,9 @@ public class MainActivity extends Activity {
     		case MainActivity.RESULT_SAVE:
     			text = "Saved";
     			break;
+    		case MainActivity.RESULT_UPDATE:
+    			text = "Updated";
+    			break;
 			default:
 				break;
     	}
@@ -149,13 +157,19 @@ public class MainActivity extends Activity {
 	
 	
 	private void updateAdapter() {
-		mArrayListContacts = (ArrayList<Contact>) db.getAllContacts();
-
 		mListViewContacts = (ListView) findViewById(R.id.listViewContacts);
 
-		mContactAdapter = new ContactStaticAdapter(MainActivity.this, mArrayListContacts, "");
+		if (mContactCount < MainActivity.CONTACT_ADAPTER_SWITCH_POINT) {
+			mArrayListContacts = (ArrayList<Contact>) db.getAllContacts();
+			mContactAdapter = new ContactStaticAdapter(MainActivity.this, mArrayListContacts, "");
+			Log.i("MainActivity", "Static adapter");
+		} else {
+			mArrayListContacts = (ArrayList<Contact>) db.getAllContactsWithoutThumbnails();
+			mContactAdapter = new ContactDynamicAdapter(MainActivity.this, mArrayListContacts, "");
+			Log.i("MainActivity", "Dynamic adapter");
+		}
+		
 		mContactAdapter.filter(mArrayListContacts, mEditTextSearch.getText().toString());
-
 		mListViewContacts.setAdapter(mContactAdapter);
 	}
 	

@@ -3,62 +3,27 @@ package uk.ac.gla.apping.quartet.businesscardapp.adapters;
 import java.util.ArrayList;
 
 import uk.ac.gla.apping.quartet.businesscardapp.activities.CardViewerActivity;
-import uk.ac.gla.apping.quartet.businesscardapp.activities.ImporterActivity;
 import uk.ac.gla.apping.quartet.businesscardapp.data.Contact;
 import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.text.Html;
-import android.text.Spanned;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
-public class ContactDynamicAdapter extends BaseAdapter {
-	private static final String MESSAGE_NOCONTACTS = "No contacts";
-	private static final String MESSAGE_NOTHING_FOUND = "No contacts match search criteria";
-
-	private static LayoutInflater inflater = null;	
-	
-	private static ListView listView;
-	private static TextView textViewNoContacts; 
-	
-    private Activity mActivity;
-    private ArrayList<Contact> mContacts;
-	private String mMatch;
-
+public class ContactDynamicAdapter extends ContactAdapter {
 	private ContactHelper db = ContactHelper.getInstance(mActivity);
  
     public ContactDynamicAdapter(Activity activity, ArrayList<Contact> contacts, String search) {
-        mActivity = activity;
-        mContacts = contacts;
-        inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        listView = (ListView) mActivity.findViewById(R.id.listViewContacts);
-        textViewNoContacts = (TextView) mActivity.findViewById(R.id.textViewNoContacts);
+        super(activity, contacts, search);
     }
  
-    public int getCount() {
-        return mContacts.size();
-    }
- 
-    public Object getItem(int position) {
-        return position;
-    }
- 
-    public long getItemId(int position) {
-        return position;
-    }
  
     public View getView(int position, View convertView, ViewGroup parent) {
         // reusing views to ensure that do not run out of memory
@@ -98,9 +63,6 @@ public class ContactDynamicAdapter extends BaseAdapter {
         }
           
         ImageView thumbnail = (ImageView) vi.findViewById(R.id.imageViewLogo);
-        
-        
-        (new ImageUpdater(thumbnail, contact.getId())).execute();
         
         thumbnail.setOnClickListener(new OnClickListener(){
 			@Override
@@ -143,46 +105,10 @@ public class ContactDynamicAdapter extends BaseAdapter {
 			}
 		});
         
+        (new ImageUpdater(thumbnail, contact.getId())).execute();
+        
         return vi;
     }
-
-	public void filter(ArrayList<Contact> allContacts, String needle) {
-		if (allContacts.size() == 0) {
-			listView.setVisibility(View.GONE);
-			textViewNoContacts.setText(MESSAGE_NOCONTACTS);
-			textViewNoContacts.setVisibility(View.VISIBLE);
-		} else {
-			
-			if (!needle.equals("")) {	
-				ArrayList<Contact> filtered = new ArrayList<Contact>();
-				for (Contact contact : allContacts) {
-					if(contact.getName().contains(needle) || contact.getCompany().contains(needle) || contact.getEmail().contains(needle)) {
-						filtered.add(contact);
-					}
-				}
-			
-				mContacts = filtered;
-			} else {
-				mContacts = allContacts;
-			}
-			
-			
-			if (mContacts.size() == 0) {
-				listView.setVisibility(View.GONE);
-				textViewNoContacts.setText(MESSAGE_NOTHING_FOUND);
-				textViewNoContacts.setVisibility(View.VISIBLE);
-			} else {
-				listView.setVisibility(View.VISIBLE);
-				textViewNoContacts.setVisibility(View.GONE);
-			}
-		}
-		mMatch = needle;
-		notifyDataSetChanged(); 
-	}
-	
-	private Spanned highlightMatch(String text) {
-		return Html.fromHtml(text.replace(mMatch, "<b><font color=red>" + mMatch + "</font></b>"));
-	}
 	
 	private class ImageUpdater extends AsyncTask<String, Void, Boolean> {
 		private ImageView mThumbnail;
@@ -199,6 +125,11 @@ public class ContactDynamicAdapter extends BaseAdapter {
 
 		@Override
 		protected Boolean doInBackground(final String... args) {
+			try {
+				Thread.sleep(100);
+			} catch (Exception e) {
+				//supress this shit
+			}
 			mBytes = db.getContactThumbnailById(id);
 			return true;
 		}
