@@ -1,29 +1,23 @@
 package uk.ac.gla.apping.quartet.businesscardapp.activities;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import uk.ac.gla.apping.quartet.businesscardapp.adapters.ContactAdapter;
 import uk.ac.gla.apping.quartet.businesscardapp.adapters.ContactDynamicAdapter;
 import uk.ac.gla.apping.quartet.businesscardapp.adapters.ContactStaticAdapter;
 import uk.ac.gla.apping.quartet.businesscardapp.data.Contact;
-import uk.ac.gla.apping.quartet.businesscardapp.data.ContactWithImages;
 import uk.ac.gla.apping.quartet.businesscardapp.helpers.ContactHelper;
 import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -83,15 +77,6 @@ public class MainActivity extends Activity {
 	        	toast.show();
 			}
 		});
-		
-		Button fuckingCrashMe = (Button) findViewById(R.id.buttonCrashMe);
-		fuckingCrashMe.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {			
-				PopulateDatabase thread = new PopulateDatabase();
-				thread.execute();	
-			}
-		});
 	}
 
 	
@@ -127,6 +112,9 @@ public class MainActivity extends Activity {
     		mContactCount = db.getContactCount();
     		updateAdapter();
     	}
+    	
+    	Toast toastContactCount = Toast.makeText(this, "Contact count:"+ mContactCount, Toast.LENGTH_LONG);
+    	toastContactCount.show();
 		
 		super.onResume();
 	}
@@ -158,61 +146,16 @@ public class MainActivity extends Activity {
 	
 	private void updateAdapter() {
 		mListViewContacts = (ListView) findViewById(R.id.listViewContacts);
-
-		Log.i("MainActivity", mContactCount +" "+ MainActivity.CONTACT_ADAPTER_SWITCH_POINT);
 		
 		if (mContactCount < MainActivity.CONTACT_ADAPTER_SWITCH_POINT) {
 			mArrayListContacts = (ArrayList<Contact>) db.getAllContacts();
 			mContactAdapter = new ContactStaticAdapter(MainActivity.this, mArrayListContacts, "");
-			Log.i("MainActivity", "Static adapter");
 		} else {
 			mArrayListContacts = (ArrayList<Contact>) db.getAllContactsWithoutThumbnails();
 			mContactAdapter = new ContactDynamicAdapter(MainActivity.this, mArrayListContacts, "");
-			Log.i("MainActivity", "Dynamic adapter");
 		}
 		
 		mContactAdapter.filter(mArrayListContacts, mEditTextSearch.getText().toString());
 		mListViewContacts.setAdapter(mContactAdapter);
 	}
-	
-	
-	private class PopulateDatabase extends AsyncTask<String, Void, Boolean> {
-		private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
-
-		/** progress dialog to show user that the backup is processing. */
-		/** application context. */
-		@Override
-		protected void onPreExecute() {
-			this.dialog.setMessage("Please wait, duplicating contacts....");
-			this.dialog.show();
-		}
-
-		@Override
-		protected Boolean doInBackground(final String... args) {
-			ContactHelper db = ContactHelper.getInstance(getApplicationContext());
-        	
-        	int copyCount = Integer.parseInt(((EditText) findViewById(R.id.editTextCopyCount)).getText().toString());
-        	for (int i = 0; i < copyCount; i++) {
-        		ContactWithImages contact = new ContactWithImages();
-    			contact.setName("Thissurname"+ (new Random().nextInt(1000)));
-    			contact.setEmail("test@test.com");
-    			contact.setCompany("RIP APPING");
-    			contact.setNumber("+44711111");
-    			contact.setThumbnail(db.getContactById(1).getThumbnail());	
-        		db.createContact(contact);
-        	}
-			
-			return true;
-		}
-
-		@Override
-		protected void onPostExecute(final Boolean success) {
-			if (dialog.isShowing()) {
-				dialog.dismiss();
-			}
-			
-			MainActivity.this.updateAdapter();
-		}
-	}
-
 }

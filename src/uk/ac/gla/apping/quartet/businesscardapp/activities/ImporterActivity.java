@@ -212,6 +212,8 @@ public class ImporterActivity extends Activity {
 		
 		Intent intent = new Intent(ImporterActivity.this, CardViewerActivity.class); 
 		intent.putExtra("id", contact.getId());
+		intent.putExtra("New", true);
+		
 		startActivity(intent); 
 		finish(); 
 	}

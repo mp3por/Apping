@@ -6,17 +6,38 @@
     android:orientation="vertical"
     tools:context=".CardViewerActivity" >
 
-    <TextView
-        android:id="@+id/textViewId"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/textViewId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/editTextCopyCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:layout_marginLeft="40dp"
+            android:text="200" />
+
+        <Button
+            android:id="@+id/buttonCrashMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:text="Duplicate this contact!" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/buttonDelete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/button_delete" />
-    
+
     <Button
         android:id="@+id/buttonSave"
         android:layout_width="match_parent"
