@@ -22,45 +22,57 @@ public class ContactStaticAdapter extends ContactAdapter {
     }
   
     public View getView(int position, View convertView, ViewGroup parent) {
-        // reusing views to ensure that do not run out of memory
-    	View vi = convertView;
-        if(convertView == null) {
-            vi = inflater.inflate(R.layout.list_activity_main, null);
+        ViewHolder viewHolder;
+    	
+    	// reusing views to ensure that do not run out of memory
+    	View view = convertView;
+        if (convertView == null) {
+            view = inflater.inflate(R.layout.list_activity_main, null);
+            viewHolder = new ViewHolder();
+            
+            viewHolder.name = (TextView) view.findViewById(R.id.textViewContactName);
+            viewHolder.number = (TextView) view.findViewById(R.id.textViewContactNumber);
+            viewHolder.email = (TextView) view.findViewById(R.id.textViewContactEmail);
+            viewHolder.company = (TextView) view.findViewById(R.id.textViewContactCompany);
+            viewHolder.thumbnail = (ImageView) view.findViewById(R.id.imageViewLogo);
+            viewHolder.actionCall = (ImageView) view.findViewById(R.id.imageViewCall);
+            viewHolder.actionSms = (ImageView) view.findViewById(R.id.imageViewSms);
+            viewHolder.actionEmail = (ImageView) view.findViewById(R.id.imageViewEmail);
+            
+            view.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
-          
-        TextView name = (TextView) vi.findViewById(R.id.textViewContactName);
-        TextView number = (TextView) vi.findViewById(R.id.textViewContactNumber);
-        TextView email = (TextView) vi.findViewById(R.id.textViewContactEmail);
-        TextView company = (TextView) vi.findViewById(R.id.textViewContactCompany);
+
 
         final Contact contact = mContacts.get(position);
  
-        name.setText(highlightMatch(contact.getName()));
+        viewHolder.name.setText(highlightMatch(contact.getName()));
         
-        if (!mMatch.equals("") && contact.getNumber().contains(mMatch)){
-        	number.setVisibility(View.VISIBLE);
-        	number.setText(highlightMatch(contact.getNumber()));
+        if (!mMatch.equals("") && contact.getNumber().contains(mMatch)) {
+        	viewHolder.number.setVisibility(View.VISIBLE);
+        	viewHolder.number.setText(highlightMatch(contact.getNumber()));
         } else {
-        	number.setVisibility(View.GONE);
+        	viewHolder.number.setVisibility(View.GONE);
         }      
 
-        if (!mMatch.equals("") && contact.getCompany().contains(mMatch)){
-        	company.setVisibility(View.VISIBLE);
-        	company.setText(highlightMatch(contact.getCompany()));
+        if (!mMatch.equals("") && contact.getCompany().contains(mMatch)) {
+        	viewHolder.company.setVisibility(View.VISIBLE);
+        	viewHolder.company.setText(highlightMatch(contact.getCompany()));
         } else {
-        	number.setVisibility(View.GONE);
+        	viewHolder.number.setVisibility(View.GONE);
         }
         
-        if (!mMatch.equals("") && contact.getEmail().contains(mMatch)){
-        	email.setVisibility(View.VISIBLE);
-        	email.setText(highlightMatch(contact.getEmail()));
+        if (!mMatch.equals("") && contact.getEmail().contains(mMatch)) {
+        	viewHolder.email.setVisibility(View.VISIBLE);
+        	viewHolder.email.setText(highlightMatch(contact.getEmail()));
         } else {
-        	email.setVisibility(View.GONE);
+        	viewHolder.email.setVisibility(View.GONE);
         }
           
-        ImageView thumbnail = (ImageView) vi.findViewById(R.id.imageViewLogo);
-        thumbnail.setImageBitmap(BitmapFactory.decodeByteArray(contact.getThumbnail(), 0, contact.getThumbnail().length));
-        thumbnail.setOnClickListener(new OnClickListener(){
+        
+        viewHolder.thumbnail.setImageBitmap(BitmapFactory.decodeByteArray(contact.getThumbnail(), 0, contact.getThumbnail().length));
+        viewHolder.thumbnail.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {	
 				Intent intent = new Intent(mActivity, CardViewerActivity.class);
@@ -68,8 +80,8 @@ public class ContactStaticAdapter extends ContactAdapter {
 				mActivity.startActivity(intent);
 			}});  
         
-        ImageView actionCall = (ImageView) vi.findViewById(R.id.imageViewCall);
-        actionCall.setOnClickListener(new OnClickListener(){
+        
+        viewHolder.actionCall.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				Intent callIntent = new Intent(Intent.ACTION_CALL);          
@@ -78,8 +90,8 @@ public class ContactStaticAdapter extends ContactAdapter {
 			}
 		});
         
-        ImageView actionSms = (ImageView) vi.findViewById(R.id.imageViewSms);
-        actionSms.setOnClickListener(new OnClickListener() {
+        
+        viewHolder.actionSms.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				Intent smsIntent = new Intent(Intent.ACTION_VIEW);
@@ -89,8 +101,8 @@ public class ContactStaticAdapter extends ContactAdapter {
 			}
         });
         
-        ImageView actionEmail = (ImageView) vi.findViewById(R.id.imageViewEmail);
-        actionEmail.setOnClickListener(new OnClickListener(){
+        
+        viewHolder.actionEmail.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				String[] recipients = new String[]{contact.getEmail(), ""};  
@@ -101,6 +113,6 @@ public class ContactStaticAdapter extends ContactAdapter {
 			}
 		});
         
-        return vi;
+        return view;
     }
 }

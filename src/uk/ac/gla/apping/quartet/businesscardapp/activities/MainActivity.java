@@ -124,8 +124,8 @@ public class MainActivity extends Activity {
     	// check contact count and update adapter only if contact count has changed
     	// provided that it is impossible to add one contact and delete another contact w/o opening MainActivity 
     	if (mContactCount != db.getContactCount()) {
-    		updateAdapter();
     		mContactCount = db.getContactCount();
+    		updateAdapter();
     	}
 		
 		super.onResume();
@@ -159,6 +159,8 @@ public class MainActivity extends Activity {
 	private void updateAdapter() {
 		mListViewContacts = (ListView) findViewById(R.id.listViewContacts);
 
+		Log.i("MainActivity", mContactCount +" "+ MainActivity.CONTACT_ADAPTER_SWITCH_POINT);
+		
 		if (mContactCount < MainActivity.CONTACT_ADAPTER_SWITCH_POINT) {
 			mArrayListContacts = (ArrayList<Contact>) db.getAllContacts();
 			mContactAdapter = new ContactStaticAdapter(MainActivity.this, mArrayListContacts, "");

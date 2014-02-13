@@ -11,6 +11,7 @@ import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -84,5 +85,16 @@ public abstract class ContactAdapter extends BaseAdapter {
 	
 	protected Spanned highlightMatch(String text) {
 		return Html.fromHtml(text.replace(mMatch, "<b><font color=red>" + mMatch + "</font></b>"));
+	}
+	
+	protected static class ViewHolder {
+		TextView name;
+		TextView number;
+		TextView email;
+		TextView company;
+		ImageView thumbnail;
+		ImageView actionCall;
+		ImageView actionSms;
+		ImageView actionEmail;
 	}
 }
