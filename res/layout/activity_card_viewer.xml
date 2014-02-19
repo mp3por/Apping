@@ -47,7 +47,7 @@
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
                android:layout_marginLeft="20dp"
-               android:inputType=""
+               android:inputType="text"
                android:text="Gregor Robertson" />
 
            <TextView
@@ -61,7 +61,7 @@
                android:layout_height="wrap_content"
                android:layout_marginLeft="20dp"
                android:layout_weight="0.31"
-               android:inputType=""
+               android:inputType="text"
                android:text="Apping" />
        </LinearLayout>
     
@@ -79,7 +79,7 @@
             android:id="@+id/editTextContactNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="number"
+            android:inputType="phone"
             android:layout_marginLeft="20dp"
             android:text="01698792198" />
         
@@ -110,7 +110,7 @@
             android:id="@+id/editTextEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType=""
+            android:inputType="textEmailAddress"
             android:layout_marginLeft="20dp"
             android:text="gregor_r@btinternet.com" />
         
