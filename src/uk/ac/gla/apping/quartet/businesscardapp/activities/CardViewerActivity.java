@@ -24,6 +24,11 @@ public class CardViewerActivity extends Activity {
 	private Button mButtonShare;
 	private Button mButtonDelete;
 	private Button mButtonSave;
+	private TextView mTextNumber;
+	private Button mButtonCall;
+	private Button mButtonSMS;
+	private TextView mTextEmail;
+	private Button mButtonEmail;
 	private int id;
 	private boolean isNew;
 	ContactHelper db = ContactHelper.getInstance(this);
@@ -122,6 +127,51 @@ public class CardViewerActivity extends Activity {
 			}
 		});
 		
+		
+		mTextNumber = (TextView) findViewById(R.id.textViewNumber);
+		
+		
+		mButtonCall = (Button) findViewById(R.id.buttonCall);
+		mButtonCall.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent(Intent.ACTION_DIAL);
+				intent.setData(Uri.prase("tel:" + mTextNumber.getText()));
+				if (intent.resolveActivity(getPackageManager()) != null) {
+					startActivity(intent);
+				    }
+			}
+		});
+		
+		
+		mButtonSMS = (Button) findViewById(R.id.buttonSMS);
+		mButtonSMS.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent(Intent.ACTION_SENDTO);
+				intent.setData(Uri.parse("smsto:"));
+				if (intent.resolveActivity(getPackageManager()) != null) {
+					startActivity(intent);
+				}
+			}
+		});
+		
+		mTextEmail = (TextView) findViewById(R.id.textViewEmail);
+		
+		mButtonEmail = (Button) findViewById(R.id.buttonEmail);
+		mButtonEmail.setOnClickListener(new OnClickListener(){ 
+			@Override 
+			public void onClick(View arg0) {
+				Intent intent = new Intent(Intent.ACTION_SEND);
+			    intent.setType("*/*");
+			    intent.putExtra(Intent.EXTRA_EMAIL, mTextEmail.getText());
+			    intent.putExtra(Intent.EXTRA_TEXT, ""); // could be used to advertise app, like sent with help off Apping
+			    if (intent.resolveActivity(getPackageManager()) != null) {
+			        startActivity(intent);
+			    }
+			}
+			
+		});
 		
 		Button fuckingCrashMe = (Button) findViewById(R.id.buttonCrashMe);
 		fuckingCrashMe.setOnClickListener(new OnClickListener(){
