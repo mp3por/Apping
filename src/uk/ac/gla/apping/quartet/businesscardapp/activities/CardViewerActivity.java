@@ -107,15 +107,14 @@ public class CardViewerActivity extends Activity {
 
 			@Override
 			public void onClick(View arg0) {
-				Contact contact = new Contact();
-				// populate contact fields here
-				contact.setId(id);
-				// ...
+				// updates the contact variable with what is stored in the text fields
+				contact.setCompany("" + mEditTextCName.getText());
+				contact.setEmail("" + mEditTextEmail.getText());
+				contact.setName("" + mEditTextName.getText());
+				contact.setNumber("" + mEditTextNumber.getText());
 				
+				db.updateContact(contact);
 				
-				// update contact in the database
-				//db.updateContact(contact);
-	        	
 				// close this activity (screen) and indicate, that save was performed
 				Intent intent = new Intent(CardViewerActivity.this, MainActivity.class);
 	        	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
