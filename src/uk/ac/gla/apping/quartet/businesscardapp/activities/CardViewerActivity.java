@@ -11,12 +11,14 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class CardViewerActivity extends Activity {
@@ -24,13 +26,16 @@ public class CardViewerActivity extends Activity {
 	private Button mButtonShare;
 	private Button mButtonDelete;
 	private Button mButtonSave;
-	private TextView mTextNumber;
-	private Button mButtonCall;
-	private Button mButtonSMS;
-	private TextView mTextEmail;
-	private Button mButtonEmail;
+	private EditText mEditTextName;
+	private EditText mEditTextCName;
+	private EditText mEditTextNumber;
+	private EditText mEditTextEmail;
+	private ImageView mImageViewCall;
+	private ImageView mImageViewSMS;
+	private ImageView mImageViewEmail;
 	private int id;
 	private boolean isNew;
+	private Contact contact;
 	ContactHelper db = ContactHelper.getInstance(this);
 	
 	@Override
@@ -42,6 +47,8 @@ public class CardViewerActivity extends Activity {
 		Intent senderIntent = getIntent();
 		id = senderIntent.getIntExtra("id", -1); // will return the id, if if was specified, or will return -1, if no id was specified
 		isNew = senderIntent.getBooleanExtra("New", false);
+		
+		contact = db.getContactById(id);
 		
 		mTextView = (TextView) findViewById(R.id.textViewId);
 		mTextView.setText("id: " + id);
@@ -59,7 +66,6 @@ public class CardViewerActivity extends Activity {
 				startActivity(testIntent);  
 			}
 		});
-		
 		
 		mButtonDelete = (Button) findViewById(R.id.buttonDelete);
 		mButtonDelete.setOnClickListener(new OnClickListener(){
@@ -96,7 +102,6 @@ public class CardViewerActivity extends Activity {
 			}
 		});
 		
-		
 		mButtonSave = (Button) findViewById(R.id.buttonSave);
 		mButtonSave.setOnClickListener(new OnClickListener(){
 
@@ -128,43 +133,50 @@ public class CardViewerActivity extends Activity {
 		});
 		
 		
-		mTextNumber = (TextView) findViewById(R.id.textViewNumber);
+		mEditTextName = (EditText) findViewById(R.id.editTextName);
+		mEditTextName.setText("" + contact.getName());
+		
+		mEditTextCName = (EditText) findViewById(R.id.editTextCName);
+		mEditTextCName.setText("" + contact.getCompany());
+		
+		mEditTextNumber = (EditText) findViewById(R.id.editTextNumber);
+		mEditTextNumber.setText("" + contact.getNumber());
+		
+		mEditTextEmail = (EditText) findViewById(R.id.editTextEmail);
+		mEditTextEmail.setText("" + contact.getEmail());
 		
 		
-		mButtonCall = (Button) findViewById(R.id.buttonCall);
-		mButtonCall.setOnClickListener(new OnClickListener(){
+		mImageViewCall = (ImageView) findViewById(R.id.imageViewCall);
+		mImageViewCall.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
 				Intent intent = new Intent(Intent.ACTION_DIAL);
-				intent.setData(Uri.prase("tel:" + mTextNumber.getText()));
+				intent.setData(Uri.parse("tel:" + contact.getNumber()));
 				if (intent.resolveActivity(getPackageManager()) != null) {
 					startActivity(intent);
 				    }
 			}
 		});
 		
-		
-		mButtonSMS = (Button) findViewById(R.id.buttonSMS);
-		mButtonSMS.setOnClickListener(new OnClickListener(){
+		mImageViewSMS = (ImageView) findViewById(R.id.imageViewSMS);
+		mImageViewSMS.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
 				Intent intent = new Intent(Intent.ACTION_SENDTO);
-				intent.setData(Uri.parse("smsto:"));
+				intent.setData(Uri.parse("smsto:" + contact.getNumber()));
 				if (intent.resolveActivity(getPackageManager()) != null) {
 					startActivity(intent);
 				}
 			}
 		});
 		
-		mTextEmail = (TextView) findViewById(R.id.textViewEmail);
-		
-		mButtonEmail = (Button) findViewById(R.id.buttonEmail);
-		mButtonEmail.setOnClickListener(new OnClickListener(){ 
+		mImageViewEmail = (ImageView) findViewById(R.id.imageViewEmail);
+		mImageViewEmail.setOnClickListener(new OnClickListener(){ 
 			@Override 
 			public void onClick(View arg0) {
 				Intent intent = new Intent(Intent.ACTION_SEND);
 			    intent.setType("*/*");
-			    intent.putExtra(Intent.EXTRA_EMAIL, mTextEmail.getText());
+			    intent.putExtra(Intent.EXTRA_EMAIL, mEditTextEmail.getText());
 			    intent.putExtra(Intent.EXTRA_TEXT, ""); // could be used to advertise app, like sent with help off Apping
 			    if (intent.resolveActivity(getPackageManager()) != null) {
 			        startActivity(intent);

@@ -37,11 +37,6 @@
            android:layout_height="wrap_content"
            android:orientation="horizontal" >
 
-           <TextView
-               android:id="@+id/textName"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content" />
-
            <EditText
                android:id="@+id/editTextName"
                android:layout_width="wrap_content"
@@ -49,11 +44,6 @@
                android:layout_marginLeft="20dp"
                android:inputType="text"
                android:text="Gregor Robertson" />
-
-           <TextView
-               android:id="@+id/textCName"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content" />
 
            <EditText
                android:id="@+id/editTextCName"
@@ -69,12 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
-        
-        <TextView 
-            android:id="@+id/textViewNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        
+
         <EditText 
             android:id="@+id/editTextNumber"
             android:layout_width="wrap_content"
@@ -83,14 +68,14 @@
             android:layout_marginLeft="20dp"
             android:text="01698792198" />
         
-        <ImageButton
-            android:id="@+id/buttonCall"
+        <ImageView
+            android:id="@+id/imageViewCall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/call" />
         
-        <ImageButton 
-            android:id="@+id/buttonSMS"
+        <ImageView 
+            android:id="@+id/imageViewSMS"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/sms" />
@@ -100,11 +85,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
-        
-        <TextView
-            android:id="@+id/textViewEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
        
         <EditText 
             android:id="@+id/editTextEmail"
@@ -114,8 +94,8 @@
             android:layout_marginLeft="20dp"
             android:text="gregor_r@btinternet.com" />
         
-        <ImageButton 
-            android:id="@+id/buttonEmail"
+        <ImageView
+            android:id="@+id/imageViewEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/email" />
