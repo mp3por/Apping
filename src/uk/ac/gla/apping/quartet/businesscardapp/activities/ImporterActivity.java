@@ -33,6 +33,8 @@ import android.widget.ImageView;
  import com.googlecode.tesseract.android.TessBaseAPI;
  */
 
+// lets do some work, sorry for not working so many days
+
 public class ImporterActivity extends Activity {
 	private static final int CAMERA_REQUEST = 0;
 	private static final int GALLERY_REQUEST = 3;
