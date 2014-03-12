@@ -15,6 +15,7 @@ import uk.ac.gla.apping.quartet.businnesscardapp.R;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -58,6 +59,7 @@ public class ImporterActivity extends Activity {
 	private Uri mImageCaptureUri;
 	public String recogString;
 	public Bitmap mBitmap;
+	public Bitmap bmpGallery;
 
 	public String getPath() {
 		return _path;
@@ -91,7 +93,10 @@ public class ImporterActivity extends Activity {
 
 			@Override
 			public void onClick(View arg0) {
-				Intent intent = new Intent(Intent.ACTION_PICK, Media.INTERNAL_CONTENT_URI);
+			//	Intent intent = new Intent(Intent.ACTION_PICK, Media.INTERNAL_CONTENT_URI);
+
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
 				startActivityForResult(intent, GALLERY_REQUEST);
 			}
 		});
@@ -153,12 +158,32 @@ public class ImporterActivity extends Activity {
 			} else if (requestCode == GALLERY_REQUEST) { // gallery returned
 				// TODO: change Uri path if it is from galary.
 				// picture
-				// Uri selectedImage = data.getData();
+			Uri selectedImage = mSenderIntent.getData();
+				
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                cursor.moveToFirst();
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String filePath = cursor.getString(columnIndex);
+                cursor.close();
+				
+                if(bmpGallery != null && !bmpGallery.isRecycled())
+                {
+                    bmpGallery = null;                
+                }
+                         
+                bmpGallery = BitmapFactory.decodeFile(filePath);
+                
+               
+                mImage.setImageBitmap(bmpGallery);
+                //picturePath = getPath(selectedImage);
 				// Bitmap bitmap =
 				// MediaStore.Images.Media.getBitmap(this.getContentResolver(),
 				// selectedImage);
+			
 			} else {
 				// fail
+				 Log.d("Status:", "Photopicker canceled"); 
 			}
 
 			Log.i("starting OCRTask :", "OK");
@@ -168,6 +193,31 @@ public class ImporterActivity extends Activity {
 
 		
 	}
+	
+    /**
+     * helper to retrieve the path of an image URI
+     */
+    public String getPath(Uri uri) {
+            // just some safety built in 
+            if( uri == null ) {
+                // TODO perform some logging or show user feedback
+                return null;
+            }
+            // try to retrieve the image from the media store first
+            // this will only work for images selected from gallery
+            String[] projection = { MediaStore.Images.Media.DATA };
+            Cursor cursor = managedQuery(uri, projection, null, null, null);
+            if( cursor != null ){
+                int column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                cursor.moveToFirst();
+                return cursor.getString(column_index);
+            }
+            // this is our fallback here
+            return uri.getPath();
+    }
+
+
 
 	private void afterOCR() {
 		
